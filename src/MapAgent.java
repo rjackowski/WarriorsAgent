@@ -11,8 +11,18 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 public class MapAgent extends Agent {
+
+    private MapAgentGui myGui;
+
+
+
+
     protected void setup() {
         System.out.println("Map created");
+
+
+        myGui = new MapAgentGui(this);
+        myGui.showGui();
 
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID());
