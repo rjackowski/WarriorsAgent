@@ -10,19 +10,27 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+
 public class MapAgent extends Agent {
 
-    private MapAgentGui myGui;
+    private MapPrepGui prepGui;
+    private MapGui mapGui;
 
+    private static int MAX_WARRIORS = 8;
+    private static Map<String, Color> warriorColors;
 
-
+    private List<Color> avilibleColors;
 
     protected void setup() {
         System.out.println("Map created");
 
+        SetupColors();
 
-        myGui = new MapAgentGui(this);
-        myGui.showGui();
+        prepGui = new MapPrepGui(this);
+        prepGui.showGui();
 
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID());
@@ -42,6 +50,17 @@ public class MapAgent extends Agent {
 
     }
 
+    private void SetupColors()
+    {
+        avilibleColors = List.of(Color.BLACK, Color.BLUE, Color.ORANGE,
+                Color.WHITE, Color.RED, Color.GREEN,
+                Color.GRAY, Color.CYAN);
+    }
+
+    public void onStartClick()
+    {
+        System.out.println("Starting map generation");
+    }
 
 
     private class GetRandomLocation extends CyclicBehaviour {
@@ -54,8 +73,9 @@ public class MapAgent extends Agent {
         public void action() {
             MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
             ACLMessage msg = myAgent.receive(mt);
-            if(msg !=  null)
+            if(msg !=  null) {
                 System.out.println(msg);
+            }
 //            myAgent.send(msg);
         }
 

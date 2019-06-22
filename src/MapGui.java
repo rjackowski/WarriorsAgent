@@ -32,22 +32,22 @@ import java.awt.event.WindowEvent;
 /**
  @author Giovanni Caire - TILAB
  */
-class MapAgentGui extends JFrame {
+class MapGui extends JFrame {
     private MapAgent myAgent;
 
     private JTextField titleField, priceField,thirdField, fourthField;
 
-    MapAgentGui(MapAgent a) {
+    MapGui(MapAgent a) {
         super(a.getLocalName());
 
         myAgent = a;
 
         JPanel p = new JPanel();
         p.setLayout(new GridLayout(3, 3));
-      //  p.add(new JLabel("Book title:"));
+        //  p.add(new JLabel("Book title:"));
         titleField = new JTextField(1);
         p.add(titleField);
-       // p.add(new JLabel("Price:"));
+        // p.add(new JLabel("Price:"));
         priceField = new JTextField(1);
         p.add(priceField);
         thirdField = new JTextField(1);
