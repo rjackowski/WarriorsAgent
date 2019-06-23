@@ -126,7 +126,7 @@ public class WarriorAgent extends Agent {
                 // Wysłanie zapytania o rejestracje na mapę
                 case 1:
                     System.out.println("Send register request");
-                    ACLMessage cfp = new ACLMessage(ACLMessage.AGREE);
+                    ACLMessage cfp = new ACLMessage(ActionCode.REGISTER.ordinal());
                     cfp.addReceiver(myMapAgent);
                     // cfp.setContent(targetBookTitle);
                     cfp.setConversationId("register");
@@ -143,18 +143,22 @@ public class WarriorAgent extends Agent {
                     ACLMessage reply = myAgent.receive(mt);
                     if (reply != null) {
                         // Reply received
-                        if (reply.getPerformative() == ACLMessage.AGREE) {
+                        if (reply.getPerformative() == ActionCode.REGISTER_ACCEPT.ordinal()) {
                             try {
                                 color = (Color)Color.class.getField(reply.getContent()).get(null);
                             }catch(Exception ex) {
 
                             }
                         }
+                        else if(reply.getPerformative() == ActionCode.REGISTER_DENY.ordinal()){
+                            doDelete();
+                        }
 
                         if (color!= null) {
                             System.out.println("color Done");
                             existOnMap = true;
                             step ++;
+                            //TODO: call setting color
                         }
                     }
                     else {
@@ -221,6 +225,5 @@ public class WarriorAgent extends Agent {
             return true;
         }
     }  // End of inner class RequestPerformer
-
 
 }

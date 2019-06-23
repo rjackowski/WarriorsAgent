@@ -20,17 +20,20 @@ public class MapAgent extends Agent {
     private MapGui mapGui;
 
     private static int MAX_WARRIORS = 8;
-    private static Map<String, Color> warriorColors;
+    private static Map<AID, Color> warriorColors;
 
     private List<Color> avilibleColors;
+    private List<AID> registeredWarriors;
 
     protected void setup() {
         System.out.println("Map created");
 
         SetupColors();
-
         prepGui = new MapPrepGui(this);
         prepGui.showGui();
+
+        registeredWarriors = new Vector<AID>();
+        warriorColors = new HashMap<AID, Color>();
 
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID());
@@ -46,7 +49,7 @@ public class MapAgent extends Agent {
         }
 
         System.out.println("Map registred");
-        addBehaviour(new GetRandomLocation());
+        addBehaviour(new GetRegistration());
 
     }
 
@@ -63,21 +66,39 @@ public class MapAgent extends Agent {
     }
 
 
-    private class GetRandomLocation extends CyclicBehaviour {
-        private AID bestSeller; // The agent who provides the best offer
-        private int bestPrice;  // The best offered price
-        private int repliesCnt = 0; // The counter of replies from seller agents
-        private MessageTemplate mt; // The template to receive replies
-        private int step = 0;
+    private class GetRegistration extends CyclicBehaviour {
 
         public void action() {
-            MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
-            ACLMessage msg = myAgent.receive(mt);
-            if(msg !=  null) {
-                System.out.println(msg);
-            }
-//            myAgent.send(msg);
+                MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.REGISTER.ordinal());
+                ACLMessage msg = myAgent.receive(mt);
+                if (msg != null) {
+                    ACLMessage reply = msg.createReply();
+
+                    if(registeredWarriors.size() < MAX_WARRIORS) {
+                        AID senderAID = msg.getSender();
+                        Color setColor = avilibleColors.get(registeredWarriors.size());
+                        warriorColors.put(senderAID, setColor);
+                        reply.setContent(setColor.toString());
+                        reply.setPerformative(ActionCode.REGISTER_ACCEPT.ordinal());
+
+                        //setting GUI
+                        registeredWarriors.add(senderAID);
+                        prepGui.setWarriorsNumber(registeredWarriors.size());
+
+                        System.out.println("Zarejestrowano wojownika " + senderAID);
+                    }
+                    else {
+                        reply.setPerformative(ActionCode.REGISTER_DENY.ordinal());
+                        System.out.println("Odrzucono rejestracje " + msg.getSender());
+                    }
+
+                    myAgent.send(reply);
+                    System.out.println(msg);
+                }
+                else {
+                    block();
+                }
         }
 
-    }  // End of inner class RequestPerformer
+    }
 }
