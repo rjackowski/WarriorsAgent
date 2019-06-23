@@ -12,6 +12,8 @@ import jade.lang.acl.MessageTemplate;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.Console;
+import java.io.ObjectOutputStream;
 
 
 public class WarriorAgent extends Agent {
@@ -19,6 +21,7 @@ public class WarriorAgent extends Agent {
 
     private int live;
     private int strength;
+    private InformationPackage infoPack;
 
     public int getCoinAmount() {
         return coinAmount;
@@ -52,18 +55,7 @@ public class WarriorAgent extends Agent {
         //addBehaviour(new RegisterOnMap());
         reg = new RegisterOnMap();
 
-        addBehaviour(new TickerBehaviour(this, 1000) {
-            protected void onTick() {
-                if(startFlag) {
-                    if (existOnMap == false)
-                        myAgent.addBehaviour(reg);
-                    else {
-                        myAgent.addBehaviour(new SubstrLive());
-                        myStateGui.refreshGui();
-                    }
-                }
-            }
-        });
+        addBehaviour(new GetAction());
 
 
     }
@@ -83,17 +75,39 @@ public class WarriorAgent extends Agent {
     }
 
 
-    private class SubstrLive extends Behaviour {
-        public void action() {
-            live = live - 1;
-        }
+    private class SubstrLive extends OneShotBehaviour {
+       private int value;
 
-        public boolean done() {
-            return true;
+        SubstrLive(int value) {
+           this.value = value;
+       }
+
+        public void action() {
+            live = live - value;
         }
     }
 
+    private class GetAction extends CyclicBehaviour {
 
+        public void action() {
+            if(startFlag) {
+                if (existOnMap == false)
+                    myAgent.addBehaviour(reg);
+
+                // Wojownik znajduje się na mapie
+                else {
+                    myAgent.addBehaviour(new SubstrLive(1));
+                    myStateGui.refreshGui();
+                }
+            }
+        }
+
+
+
+
+
+
+    }
 
 
     private class RegisterOnMap extends Behaviour {
@@ -145,14 +159,17 @@ public class WarriorAgent extends Agent {
                         // Reply received
                         if (reply.getPerformative() == ActionCode.REGISTER_ACCEPT) {
                             try {
+                                System.out.println("Jestem tu");
                                 color = new Color(Integer.parseInt(reply.getContent()));
                             }catch(Exception ex) {
-
+                                ex.printStackTrace();
                             }
                         }
                         else if(reply.getPerformative() == ActionCode.REGISTER_DENY){
                             doDelete();
                         }
+
+
 
                         if (color!= null) {
                             System.out.println("color Done");
@@ -166,7 +183,7 @@ public class WarriorAgent extends Agent {
                     else {
                         block();
                     }
-                    existOnMap = true;
+                   // existOnMap = true;
                     break;
             }
         }
@@ -185,47 +202,5 @@ public class WarriorAgent extends Agent {
     }
 
 
-    private class AskForLocation extends Behaviour {
-        //private AID map;
-
-        //private AID bestSeller; // The agent who provides the best offer
-        //private int bestPrice;  // The best offered price
-        //private int repliesCnt = 0; // The counter of replies from seller agents
-        private MessageTemplate mt; // The template to receive replies
-        private int step = 0;
-        private AID[] map;
-
-        public void action() {
-            DFAgentDescription template = new DFAgentDescription();
-            ServiceDescription sd = new ServiceDescription();
-            sd.setType("map");
-            template.addServices(sd);
-            try {
-                DFAgentDescription[] result = DFService.search(myAgent, template);
-                System.out.println("Found the following maps:");
-                map = new AID[result.length];
-                for (int i = 0; i < result.length; ++i) {
-                    map[i] = result[i].getName();
-                    ACLMessage question = new ACLMessage(ACLMessage.INFORM);
-                    question.addReceiver(map[i]);
-                    question.setContent("Location");
-                    question.setConversationId("location");
-                    myAgent.send(question);
-                    System.out.println(map[i].getName());
-                }
-            } catch (FIPAException fe) {
-                fe.printStackTrace();
-            }
-
-
-//
-
-
-        }
-
-        public boolean done() {
-            return true;
-        }
-    }  // End of inner class RequestPerformer
 
 }
