@@ -91,4 +91,10 @@ class WarriorAgentGui extends JFrame {
 //        setLocation(centerX - getWidth() / 2, centerY - getHeight() / 2);
         super.setVisible(true);
     }
+
+    public void hideGui()
+    {
+        super.setVisible(false);
+    }
+
 }
