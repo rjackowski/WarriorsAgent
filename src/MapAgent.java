@@ -62,7 +62,11 @@ public class MapAgent extends Agent {
 
     public void onStartClick()
     {
-        System.out.println("Starting map generation");
+        MapField m = new MapField(3, 3);
+        prepGui.hideGui();
+        mapGui = new MapGui(this, m);
+        mapGui.showGui();
+        mapGui.updateMap();
     }
 
 

@@ -127,6 +127,11 @@ class MapPrepGui extends JFrame {
         super.setVisible(true);
     }
 
+    public void hideGui()
+    {
+        super.setVisible(false);
+    }
+
     public void setWarriorsNumber(int number)
     {
         warriorsNumberLabel.setText("Warriors registered: " + number);
