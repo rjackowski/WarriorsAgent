@@ -126,7 +126,7 @@ public class WarriorAgent extends Agent {
                 // Wysłanie zapytania o rejestracje na mapę
                 case 1:
                     System.out.println("Send register request");
-                    ACLMessage cfp = new ACLMessage(ActionCode.REGISTER.ordinal());
+                    ACLMessage cfp = new ACLMessage(ActionCode.REGISTER);
                     cfp.addReceiver(myMapAgent);
                     // cfp.setContent(targetBookTitle);
                     cfp.setConversationId("register");
@@ -143,14 +143,14 @@ public class WarriorAgent extends Agent {
                     ACLMessage reply = myAgent.receive(mt);
                     if (reply != null) {
                         // Reply received
-                        if (reply.getPerformative() == ActionCode.REGISTER_ACCEPT.ordinal()) {
+                        if (reply.getPerformative() == ActionCode.REGISTER_ACCEPT) {
                             try {
                                 color = (Color)Color.class.getField(reply.getContent()).get(null);
                             }catch(Exception ex) {
 
                             }
                         }
-                        else if(reply.getPerformative() == ActionCode.REGISTER_DENY.ordinal()){
+                        else if(reply.getPerformative() == ActionCode.REGISTER_DENY){
                             doDelete();
                         }
 

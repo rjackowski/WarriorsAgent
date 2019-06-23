@@ -69,7 +69,7 @@ public class MapAgent extends Agent {
     private class GetRegistration extends CyclicBehaviour {
 
         public void action() {
-                MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.REGISTER.ordinal());
+                MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.REGISTER);
                 ACLMessage msg = myAgent.receive(mt);
                 if (msg != null) {
                     ACLMessage reply = msg.createReply();
@@ -79,7 +79,7 @@ public class MapAgent extends Agent {
                         Color setColor = avilibleColors.get(registeredWarriors.size());
                         warriorColors.put(senderAID, setColor);
                         reply.setContent(setColor.toString());
-                        reply.setPerformative(ActionCode.REGISTER_ACCEPT.ordinal());
+                        reply.setPerformative(ActionCode.REGISTER_ACCEPT);
 
                         //setting GUI
                         registeredWarriors.add(senderAID);
@@ -88,7 +88,7 @@ public class MapAgent extends Agent {
                         System.out.println("Zarejestrowano wojownika " + senderAID);
                     }
                     else {
-                        reply.setPerformative(ActionCode.REGISTER_DENY.ordinal());
+                        reply.setPerformative(ActionCode.REGISTER_DENY);
                         System.out.println("Odrzucono rejestracje " + msg.getSender());
                     }
 

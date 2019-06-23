@@ -1,7 +1,7 @@
 package src;
 
-public enum ActionCode {
-    REGISTER,
-    REGISTER_ACCEPT,
-    REGISTER_DENY,
+public class ActionCode {
+    public static final int REGISTER = 0;
+    public static final int REGISTER_ACCEPT = 1;
+    public static final int REGISTER_DENY = 2;
 }
