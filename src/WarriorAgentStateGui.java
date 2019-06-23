@@ -36,6 +36,7 @@ class WarriorAgentStateGui extends JFrame {
     private WarriorAgent myAgent;
 
     private JTextField liveField, coinField;
+    private JButton agentButton;
 
     WarriorAgentStateGui(WarriorAgent a) {
         super(a.getLocalName());
@@ -57,7 +58,7 @@ class WarriorAgentStateGui extends JFrame {
 
      //   p.add(new JLabel("Agent"));
       //  p.add(new JLabel("Kolor"));
-        JButton agentButton = new JButton("");
+        agentButton = new JButton("");
         agentButton.setBackground(a.getColor());
         p.add(agentButton);
         getContentPane().add(p, BorderLayout.AFTER_LAST_LINE);
@@ -111,7 +112,7 @@ class WarriorAgentStateGui extends JFrame {
 
     public void setColor(Color color)
     {
-        //TODO: set color
+        agentButton.setBackground(color);
     }
 
 

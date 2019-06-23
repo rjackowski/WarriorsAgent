@@ -145,7 +145,7 @@ public class WarriorAgent extends Agent {
                         // Reply received
                         if (reply.getPerformative() == ActionCode.REGISTER_ACCEPT) {
                             try {
-                                color = (Color)Color.class.getField(reply.getContent()).get(null);
+                                color = new Color(Integer.parseInt(reply.getContent()));
                             }catch(Exception ex) {
 
                             }
@@ -157,8 +157,8 @@ public class WarriorAgent extends Agent {
                         if (color!= null) {
                             System.out.println("color Done");
                             existOnMap = true;
+                            myStateGui.setColor(color);
                             step ++;
-                            //TODO: call setting color
                         }
                     }
                     else {

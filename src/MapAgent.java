@@ -78,7 +78,7 @@ public class MapAgent extends Agent {
                         AID senderAID = msg.getSender();
                         Color setColor = avilibleColors.get(registeredWarriors.size());
                         warriorColors.put(senderAID, setColor);
-                        reply.setContent(setColor.toString());
+                        reply.setContent(Integer.toString(setColor.getRGB()));
                         reply.setPerformative(ActionCode.REGISTER_ACCEPT);
 
                         //setting GUI
