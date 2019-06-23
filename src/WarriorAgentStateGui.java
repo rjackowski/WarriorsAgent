@@ -105,9 +105,7 @@ class WarriorAgentStateGui extends JFrame {
     }
 
     public void refreshGui() {
-        pack();
         showParamaters();
-        super.setVisible(true);
     }
 
     public void setColor(Color color)

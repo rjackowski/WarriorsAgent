@@ -158,6 +158,8 @@ public class WarriorAgent extends Agent {
                             System.out.println("color Done");
                             existOnMap = true;
                             myStateGui.setColor(color);
+                            myGui.hideGui();
+                            myStateGui.showGui();
                             step ++;
                         }
                     }
