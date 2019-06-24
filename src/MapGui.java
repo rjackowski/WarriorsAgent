@@ -22,12 +22,13 @@ package src; /*****************************************************************
  *****************************************************************/
 
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
 /**
  @author Giovanni Caire - TILAB
@@ -36,64 +37,72 @@ class MapGui extends JFrame {
     private MapAgent myAgent;
 
     private JTextField titleField, priceField,thirdField, fourthField;
+    private BufferedImage wallImage, floorImage;
+    private MapField map;
+    private JPanel panel;
 
-    MapGui(MapAgent a) {
+    MapGui(MapAgent a, MapField map) {
         super(a.getLocalName());
+        this.map = map;
+        loadImages();
 
         myAgent = a;
 
-        JPanel p = new JPanel();
-        p.setLayout(new GridLayout(3, 3));
-        //  p.add(new JLabel("Book title:"));
-        titleField = new JTextField(1);
-        p.add(titleField);
-        // p.add(new JLabel("Price:"));
-        priceField = new JTextField(1);
-        p.add(priceField);
-        thirdField = new JTextField(1);
-        p.add(thirdField);
-        fourthField = new JTextField(1);
-        p.add(fourthField);
-//        p.add(priceField);
-//        p.add(priceField);
-        getContentPane().add(p, BorderLayout.CENTER);
+        panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
 
-//        JButton addButton = new JButton("Add");
-//        addButton.addActionListener( new ActionListener() {
-//            public void actionPerformed(ActionEvent ev) {
-//                try {
-//                    String title = titleField.getText().trim();
-//                    String price = priceField.getText().trim();
-//               //     myAgent.updateCatalogue(title, Integer.parseInt(price));
-//                    titleField.setText("");
-//                    priceField.setText("");
-//                }
-//                catch (Exception e) {
-//                    JOptionPane.showMessageDialog(MapAgentGui.this, "Invalid values. "+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-//                }
-//            }
-//        } );
-//        p = new JPanel();
-//        p.add(addButton);
-//        getContentPane().add(p, BorderLayout.SOUTH);
+                for (int i = 0; i < map.getSizeX(); i++) {
+                    int drawXPosition = wallImage.getHeight() * i;
+                    for (int j = 0; j < map.getSizeY(); j++) {
+                        int drawYPosition = wallImage.getWidth() * j;
+                        char drawType = map.getFromPosition(j, i);
+                        BufferedImage tempImage;
+                        if (drawType == ' ')
+                            tempImage = floorImage;
+                        else
+                            tempImage = wallImage;
+                        g.drawImage(tempImage, drawXPosition, drawYPosition, null);
+                    }
+                }
+            }
+        };
 
-        // Make the agent terminate when the user closes
-        // the GUI using the button on the upper right corner
+        panel.setSize(map.getSizeX() * wallImage.getWidth(), map.getSizeY() * wallImage.getHeight());
+        getContentPane().add(panel, BorderLayout.CENTER);
+
         addWindowListener(new	WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 myAgent.doDelete();
             }
         } );
 
-        setResizable(true);
+        setResizable(false);
+    }
+
+    public void updateMap()
+    {
+        panel.repaint();
     }
 
     public void showGui() {
         pack();
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int centerX = (int)screenSize.getWidth() / 2;
-        int centerY = (int)screenSize.getHeight() / 2;
-        setLocation(centerX - getWidth() / 2, centerY - getHeight() / 2);
+     //   Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+       // int centerX = (int)screenSize.getWidth() / 2;
+       // int centerY = (int)screenSize.getHeight() / 2;
+       // setLocation(centerX - getWidth() / 2, centerY - getHeight() / 2);
+        setSize(map.getSizeX() * wallImage.getWidth(), map.getSizeY() * wallImage.getHeight());
         super.setVisible(true);
+    }
+
+    private void loadImages() {
+        try {
+            wallImage = ImageIO.read(new File("Images/wall.jpg"));
+            floorImage = ImageIO.read(new File("Images/ground.jpg"));
+        }
+        catch (Exception e) {
+            System.out.println(e.toString());
+        }
     }
 }
