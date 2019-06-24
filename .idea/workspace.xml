@@ -1,40 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3511e8d6-70b6-41c7-9888-82976e4c5c1c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/InformationPackage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/jade_4_5_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/APDescription.txt" beforeDir="false" afterPath="$PROJECT_DIR$/APDescription.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MTPs-Main-Container.txt" beforeDir="false" afterPath="$PROJECT_DIR$/MTPs-Main-Container.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WarriorsAgent.iml" beforeDir="false" afterPath="$PROJECT_DIR$/WarriorsAgent.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/.idea/libraries/jade_4_5_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/.idea/libraries/jade_4_5_0.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/ActionCode.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/ActionCode.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/MapAgent$GetRegistration.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/MapAgent$GetRegistration.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/MapAgent.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/MapAgent.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/MapGui$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/MapGui$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/MapGui.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/MapGui.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/MapPrepGui$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/MapPrepGui$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/MapPrepGui$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/MapPrepGui$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/MapPrepGui.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/MapPrepGui.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgent$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgent$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgent$2.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgent$AskForLocation.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgent$RegisterOnMap.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgent$RegisterOnMap.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgent$SubstrLive.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgent$SubstrLive.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgent.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgent.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgentGui$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgentGui$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgentGui$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgentGui$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgentGui.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgentGui.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgentStateGui$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgentStateGui$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgentStateGui.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WarriorsAgent/src/WarriorAgentStateGui.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ActionCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ActionCode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MapAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MapAgent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/WarriorAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/WarriorAgent.java" afterDir="false" />
-    </list>
+    <list default="true" id="3511e8d6-70b6-41c7-9888-82976e4c5c1c" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -47,56 +14,34 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/WarriorAgent.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="22">
-              <caret line="98" column="57" selection-start-line="98" selection-start-column="57" selection-end-line="98" selection-end-column="57" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#512#513#0" expanded="true" />
-                <element signature="e#545#546#0" expanded="true" />
-                <element signature="e#780#781#0" expanded="true" />
-                <element signature="e#808#809#0" expanded="true" />
-                <element signature="e#1960#1961#0" expanded="true" />
-                <element signature="e#1992#1993#0" expanded="true" />
-                <element signature="e#1828#1829#0" expanded="true" />
-                <element signature="e#1855#1856#0" expanded="true" />
-                <element signature="e#1907#1908#0" expanded="true" />
-                <element signature="e#1950#1951#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="-595">
+              <caret line="52" column="45" selection-start-line="52" selection-start-column="45" selection-end-line="52" selection-end-column="45" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/MapGui.java">
+        <entry file="file://$PROJECT_DIR$/out/production/WarriorsAgent/src/MapAgent.class">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="39" column="10" selection-start-line="39" selection-start-column="10" selection-end-line="39" selection-end-column="10" />
+            <state relative-caret-position="255">
+              <caret line="15" column="32" selection-start-line="15" selection-start-column="32" selection-end-line="15" selection-end-column="32" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/ActionCode.java">
+        <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="9" lean-forward="true" selection-start-line="9" selection-end-line="9" />
+            <state relative-caret-position="714">
+              <caret line="42" column="28" selection-start-line="42" selection-start-column="28" selection-end-line="42" selection-end-column="28" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/WarriorAgentGui.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="351">
-              <caret line="96" column="30" selection-start-line="96" selection-start-column="30" selection-end-line="96" selection-end-column="30" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/InformationPackage.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="170">
@@ -116,8 +61,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/MapAgent.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="117">
-              <caret line="81" column="39" selection-start-line="81" selection-start-column="39" selection-end-line="81" selection-end-column="39" />
+            <state relative-caret-position="102">
+              <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
             </state>
           </provider>
         </entry>
@@ -188,6 +133,75 @@
             <path>
               <item name="WarriorsAgent" type="b2602c69:ProjectViewProjectNode" />
               <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="WarriorsAgent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="production" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="WarriorsAgent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="production" type="462c0819:PsiDirectoryNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="WarriorsAgent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="WarriorsAgent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="WarriorsAgent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+              <item name="com" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="WarriorsAgent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+              <item name="com" type="462c0819:PsiDirectoryNode" />
+              <item name="intellij" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="WarriorsAgent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+              <item name="com" type="462c0819:PsiDirectoryNode" />
+              <item name="intellij" type="462c0819:PsiDirectoryNode" />
+              <item name="uiDesigner" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="WarriorsAgent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
+              <item name="com" type="462c0819:PsiDirectoryNode" />
+              <item name="intellij" type="462c0819:PsiDirectoryNode" />
+              <item name="uiDesigner" type="462c0819:PsiDirectoryNode" />
+              <item name="core" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="WarriorsAgent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="WarriorsAgent" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -210,7 +224,7 @@
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1561286776020" />
     <property name="last_opened_file_path" value="$USER_HOME$/Desktop/Magisterka/2 semestr/Miasi2/jade-4.5.0.jar!/" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
@@ -251,7 +265,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7155000" />
+    <option name="totallyTimeSpent" value="7219000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -266,7 +280,7 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.30711043" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.31164902" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Learn" order="3" />
@@ -274,14 +288,14 @@
       <window_info id="Favorites" order="5" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32936078" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.17348608" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.17348608" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3997833" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.3289689" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.3289689" />
-      <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="9" weight="0.3289689" />
+      <window_info anchor="bottom" id="Event Log" order="8" sideWeight="0.50075644" side_tool="true" weight="0.3289689" />
+      <window_info anchor="bottom" id="Version Control" order="9" sideWeight="0.49924356" visible="true" weight="0.3289689" />
       <window_info anchor="bottom" id="Messages" order="10" weight="0.3289689" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -383,30 +397,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/WarriorAgent.java">
+    <entry file="file://$PROJECT_DIR$/src/MapAgent.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="98" column="57" selection-start-line="98" selection-start-column="57" selection-end-line="98" selection-end-column="57" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#512#513#0" expanded="true" />
-            <element signature="e#545#546#0" expanded="true" />
-            <element signature="e#780#781#0" expanded="true" />
-            <element signature="e#808#809#0" expanded="true" />
-            <element signature="e#1960#1961#0" expanded="true" />
-            <element signature="e#1992#1993#0" expanded="true" />
-            <element signature="e#1828#1829#0" expanded="true" />
-            <element signature="e#1855#1856#0" expanded="true" />
-            <element signature="e#1907#1908#0" expanded="true" />
-            <element signature="e#1950#1951#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="102">
+          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/MapAgent.java">
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="117">
-          <caret line="81" column="39" selection-start-line="81" selection-start-column="39" selection-end-line="81" selection-end-column="39" />
+        <state relative-caret-position="714">
+          <caret line="42" column="28" selection-start-line="42" selection-start-column="28" selection-end-line="42" selection-end-column="28" />
         </state>
       </provider>
     </entry>
@@ -417,6 +418,13 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/WarriorAgent.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-595">
+          <caret line="52" column="45" selection-start-line="52" selection-start-column="45" selection-end-line="52" selection-end-column="45" />
         </state>
       </provider>
     </entry>
@@ -460,7 +468,7 @@
       </state>
       <state key="JdkListConfigurable.UI">
         <settings>
-          <last-edited>12</last-edited>
+          <last-edited>1.8</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
