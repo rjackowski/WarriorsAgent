@@ -142,12 +142,6 @@ public class MapAgent extends Agent {
                 else {
                     block();
                 }
-
-                myAgent.send(reply);
-                System.out.println(msg);
-            } else {
-                block();
-            }
         }
 
     }
