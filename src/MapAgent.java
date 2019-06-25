@@ -26,7 +26,8 @@ public class MapAgent extends Agent {
     private List<Color> avilibleColors;
     private List<AID> registeredWarriors;
 
-    private InformationPackage infoPack;
+    private boolean startFlag = false;
+    private boolean waitForAllWarriors = false;
 
     protected void setup() {
         System.out.println("Map created");
@@ -46,65 +47,98 @@ public class MapAgent extends Agent {
         dfd.addServices(sd);
         try {
             DFService.register(this, dfd);
-        }
-        catch (FIPAException fe) {
+        } catch (FIPAException fe) {
             fe.printStackTrace();
         }
 
         System.out.println("Map registred");
         addBehaviour(new GetRegistration());
-
+        addBehaviour(new ManageAction());
     }
 
-    private void SetupColors()
-    {
+    private void SetupColors() {
         avilibleColors = List.of(Color.BLACK, Color.BLUE, Color.ORANGE,
                 Color.WHITE, Color.RED, Color.GREEN,
                 Color.GRAY, Color.CYAN);
     }
 
-    public void onStartClick()
-    {
+    public void onStartClick() {
         MapField m = new MapField(3, 3);
         prepGui.hideGui();
         mapGui = new MapGui(this, m);
         mapGui.showGui();
         mapGui.updateMap();
+        startFlag = true;
+    }
+
+    private class ManageAction extends CyclicBehaviour {
+        public void action() {
+            if (startFlag) {
+                if (!waitForAllWarriors) {
+                    for (AID warrior : registeredWarriors) {
+
+                        ACLMessage msg = new ACLMessage(ActionCode.POSITION);
+                        InformationPackage infPack = new InformationPackage();
+                        Vector<Character> visible = new Vector<Character>();
+                        visible.add(' ');
+                        visible.add(' ');
+                        visible.add(' ');
+                        infPack.setDownVisible(visible);
+                        infPack.setRightVisible(visible);
+                        visible.set(2, '1');
+                        infPack.setTopVisible(visible);
+                        visible.set(2, ' ');
+                        visible.set(1, 's');
+                        infPack.setLeftVisible(visible);
+                        msg.addReceiver(warrior);
+                        try {
+                            msg.setContentObject(infPack);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        msg.setConversationId("move_send");
+                        msg.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+                        myAgent.send(msg);
+                        System.out.println("Wysłano mozliwe ruchy ");
+                        waitForAllWarriors = true;
+                    }
+                }
+            }
+
+        }
     }
 
 
     private class GetRegistration extends CyclicBehaviour {
 
         public void action() {
-                MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.REGISTER);
-                ACLMessage msg = myAgent.receive(mt);
-                if (msg != null) {
-                    ACLMessage reply = msg.createReply();
+            MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.REGISTER);
+            ACLMessage msg = myAgent.receive(mt);
+            if (msg != null) {
+                ACLMessage reply = msg.createReply();
 
-                    if(registeredWarriors.size() < MAX_WARRIORS) {
-                        AID senderAID = msg.getSender();
-                        Color setColor = avilibleColors.get(registeredWarriors.size());
-                        warriorColors.put(senderAID, setColor);
-                        reply.setContent(Integer.toString(setColor.getRGB()));
-                        reply.setPerformative(ActionCode.REGISTER_ACCEPT);
+                if (registeredWarriors.size() < MAX_WARRIORS) {
+                    AID senderAID = msg.getSender();
+                    Color setColor = avilibleColors.get(registeredWarriors.size());
+                    warriorColors.put(senderAID, setColor);
+                    reply.setContent(Integer.toString(setColor.getRGB()));
+                    reply.setPerformative(ActionCode.REGISTER_ACCEPT);
 
-                        //setting GUI
-                        registeredWarriors.add(senderAID);
-                        prepGui.setWarriorsNumber(registeredWarriors.size());
+                    //setting GUI
+                    registeredWarriors.add(senderAID);
+                    prepGui.setWarriorsNumber(registeredWarriors.size());
 
-                        System.out.println("Zarejestrowano wojownika " + senderAID);
-                    }
-                    else {
-                        reply.setPerformative(ActionCode.REGISTER_DENY);
-                        System.out.println("Odrzucono rejestracje " + msg.getSender());
-                    }
-
-                    myAgent.send(reply);
-                    System.out.println(msg);
+                    System.out.println("Zarejestrowano wojownika " + senderAID);
+                } else {
+                    reply.setPerformative(ActionCode.REGISTER_DENY);
+                    System.out.println("Odrzucono rejestracje " + msg.getSender());
                 }
-                else {
-                    block();
-                }
+
+                myAgent.send(reply);
+                System.out.println(msg);
+            } else {
+                block();
+            }
         }
 
     }

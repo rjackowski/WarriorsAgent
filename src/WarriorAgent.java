@@ -14,14 +14,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.Console;
 import java.io.ObjectOutputStream;
-
+import java.util.Vector;
+import java.util.List;
 
 public class WarriorAgent extends Agent {
 
 
     private int live;
     private int strength;
-    private InformationPackage infoPack;
+   // private
 
     public int getCoinAmount() {
         return coinAmount;
@@ -88,26 +89,161 @@ public class WarriorAgent extends Agent {
     }
 
     private class GetAction extends CyclicBehaviour {
-
+        InformationPackage infoPack;
         public void action() {
             if(startFlag) {
                 if (existOnMap == false)
                     myAgent.addBehaviour(reg);
-
                 // Wojownik znajduje się na mapie
                 else {
+                    MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.POSITION);
+                    ACLMessage msg = myAgent.receive(mt);
+                    if (msg != null) {
+                        try {
+                            infoPack = (InformationPackage) msg.getContentObject();
+                            addBehaviour(new MakeMoveDecision(infoPack));
+                            System.out.println("Otrzymano możliwe ruchy");
+                        } catch(Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    else {
+                        block();
+                    }
+
                     myAgent.addBehaviour(new SubstrLive(1));
                     myStateGui.refreshGui();
                 }
             }
         }
 
-
-
-
-
-
     }
+
+
+    private class MakeMoveDecision extends OneShotBehaviour {
+        InformationPackage infPack;
+        float pointForLeft;
+        float pointForRight;
+        float pointForDown;
+        float pointForTop;
+        List<Character> warriorsList;
+
+
+
+        MakeMoveDecision(InformationPackage nInfPack) {
+            infPack = nInfPack;
+            warriorsList = List.of('1','2','3','4','5','6','7','8','9');
+
+        }
+
+        public void action() {
+            char decision;
+            float maxPoint;
+
+
+           // temp = findPosition('s',infPack.getBottomVisible());
+
+            //Szukanie skarbu i przeciwnika
+            pointForLeft += countProfit(infPack.getLeftVisible());
+            pointForRight += countProfit(infPack.getRightVisible());
+            pointForDown += countProfit(infPack.getDownVisible());
+            pointForTop += countProfit(infPack.getTopVisible());
+
+            decision = 'L';
+            maxPoint = pointForLeft;
+            if (pointForRight > maxPoint) {
+                maxPoint = pointForRight;
+                decision = 'R';
+            }
+            if (pointForDown > maxPoint) {
+                maxPoint = pointForDown;
+                decision = 'D';
+            }
+            if (pointForTop > maxPoint) {
+                maxPoint = pointForTop;
+                decision = 'T';
+            }
+
+            sendDecision(decision);
+
+        }
+
+        public void sendDecision(char decision) {
+            Character position = ' ';
+            switch(decision) {
+                case 'L':
+                    position = infPack.getLeftVisible().firstElement();
+                case 'R':
+                    position = infPack.getRightVisible().firstElement();
+                case 'D':
+                    position = infPack.getDownVisible().firstElement();
+                case 'T':
+                    position = infPack.getTopVisible().firstElement();
+            }
+
+            if(warriorsList.contains(position)){
+                sendAttack(position);
+            }
+            else
+                sendMove(decision);
+
+
+        }
+
+        public void sendAttack(char target){
+            AttackPackage attPack = new AttackPackage(target,strength);
+            ACLMessage msg = new ACLMessage(ActionCode.ATTACK_DECISION);
+            System.out.println("Wysłano decyzje ataku na " + target);
+            msg.addReceiver(myMapAgent);
+            try{
+            msg.setContentObject(attPack);
+            }
+            catch(Exception ex) {
+                ex.printStackTrace();
+            }
+
+            msg.setConversationId("attack_send");
+            msg.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+            myAgent.send(msg);
+        }
+
+        public void sendMove(char decision){
+            ACLMessage msg = new ACLMessage(ActionCode.MOVE_DECISION);
+            System.out.println("Wysłano decyzje ruchu w " + decision);
+            msg.addReceiver(myMapAgent);
+            msg.setContent(Character.toString(decision));
+            msg.setConversationId("move_send");
+            msg.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+            myAgent.send(msg);
+        }
+
+
+        public int findPosition( char toFind, Vector<Character> vectorToLook) {
+            for(int i=0; i< vectorToLook.size(); i++) {
+                if (vectorToLook.get(i) == toFind)
+                    return i;
+            }
+            return 0;
+        }
+
+
+        public float countProfit( Vector<Character> vectorToLook) {
+            float generalResult, resultPositive = 0, resultNegative = 0, temp; // positive- find a gold, negative - alien warrior
+
+            temp = findPosition('s',vectorToLook);
+            if (temp != 0)
+                resultPositive =  12 - 2 * temp; //
+
+            for(Character ch: warriorsList) {
+                temp = findPosition(ch ,vectorToLook);
+                if(temp != 0)
+                    resultNegative +=  -12 - 2 * temp;
+            }
+            generalResult = resultPositive + resultNegative;
+            return generalResult;
+        }
+    }
+
 
 
     private class RegisterOnMap extends Behaviour {
