@@ -3,6 +3,7 @@ package src;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.List;
+import java.util.Random;
 import java.util.Vector;
 
 public class MapField {
@@ -11,6 +12,7 @@ public class MapField {
     private int sizex, sizey;
     private int treasuresLeft;
     private int warriorsLeft;
+    private List<Position> warriorsPosition;
 
     public int getSizeX() {
         return sizex;
@@ -74,11 +76,42 @@ public class MapField {
                 line = br.readLine();
                 tempLine++;
             }
+
+            generateTreasures(possibleTreasuresPos);
+            generateWarriors(possibleWarriorsPos);
         }
         catch (Exception e){
             System.out.println(e.toString());
         }
     }
+
+    private void generateTreasures(List<Position> positions)
+    {
+        Random random = new Random();
+        for(int i = 0; i < treasuresLeft; i++) {
+            int index = random.nextInt(positions.size());
+            setMapField(positions.get(index), 't');
+            positions.remove(index);
+        }
+    }
+
+    private void generateWarriors(List<Position> positions)
+    {
+        Random random = new Random();
+        warriorsPosition = new Vector<Position>();
+        for(int i = 0; i < warriorsLeft; i++) {
+            int index = random.nextInt(positions.size());
+            setMapField(positions.get(index), (char)i);
+            warriorsPosition.add(positions.get(index));
+            positions.remove(index);
+        }
+    }
+
+    private void setMapField(Position p, char c)
+    {
+        map[p.getX()][p.getY()] = c;
+    }
+
 
     private void printMap()
     {

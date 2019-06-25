@@ -103,7 +103,7 @@ class MapPrepGui extends JFrame {
         startButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                myAgent.onStartClick();
+                myAgent.onStartClick(Integer.valueOf(treasureText.getText()));
             }
         });
         p.add(startButton, c);
