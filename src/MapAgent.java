@@ -11,6 +11,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.*;
 import java.util.List;
 
@@ -24,6 +25,8 @@ public class MapAgent extends Agent {
 
     private List<Color> avilibleColors;
     private List<AID> registeredWarriors;
+
+    private InformationPackage infoPack;
 
     protected void setup() {
         System.out.println("Map created");
