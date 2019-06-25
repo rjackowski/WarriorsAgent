@@ -29,6 +29,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.nio.Buffer;
 
 /**
  @author Giovanni Caire - TILAB
@@ -37,7 +38,7 @@ class MapGui extends JFrame {
     private MapAgent myAgent;
 
     private JTextField titleField, priceField,thirdField, fourthField;
-    private BufferedImage wallImage, floorImage;
+    private BufferedImage wallImage, floorImage, treasureImage;
     private MapField map;
     private JPanel panel;
 
@@ -59,11 +60,21 @@ class MapGui extends JFrame {
                         int drawYPosition = wallImage.getWidth() * j;
                         char drawType = map.getFromPosition(j, i);
                         BufferedImage tempImage;
-                        if (drawType == ' ')
-                            tempImage = floorImage;
-                        else
+                        if (drawType == '#')
                             tempImage = wallImage;
+                        else
+                            tempImage = floorImage;
                         g.drawImage(tempImage, drawXPosition, drawYPosition, null);
+
+                        if(drawType != '#' && drawType != ' ') {
+                            if (drawType == 't')
+                                g.drawImage(treasureImage, drawXPosition, drawYPosition, null);
+                            else {
+                                int warriorNumber = (int)drawType;
+                                g.setColor(MapAgent.warriorColors.get(warriorNumber));
+                                g.fillOval(drawXPosition, drawYPosition, 25, 25);
+                            }
+                        }
                     }
                 }
             }
@@ -100,9 +111,20 @@ class MapGui extends JFrame {
         try {
             wallImage = ImageIO.read(new File("Images/wall.jpg"));
             floorImage = ImageIO.read(new File("Images/ground.jpg"));
+            treasureImage = ImageIO.read(new File("Images/treasure_chest.jpg"));
+            treasureImage = convertToARGB(treasureImage);
         }
         catch (Exception e) {
             System.out.println(e.toString());
         }
+    }
+
+    private BufferedImage convertToARGB(BufferedImage image) {
+        BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(),
+                BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = newImage.createGraphics();
+        g.drawImage(image, 0, 0, null);
+        g.dispose();
+        return newImage;
     }
 }
