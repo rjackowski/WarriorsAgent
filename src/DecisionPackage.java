@@ -3,7 +3,23 @@ package src;
 import java.io.Serializable;
 
 public class DecisionPackage implements Serializable {
-   private char type; // A-atttack , M-move
+    public char getType() {
+        return type;
+    }
+
+    public void setType(char type) {
+        this.type = type;
+    }
+
+    public char getDirection() {
+        return direction;
+    }
+
+    public void setDirection(char direction) {
+        this.direction = direction;
+    }
+
+    private char type; // A-atttack , M-move
     private char direction; // L-left R , T, D
 
     private char target;

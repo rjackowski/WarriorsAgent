@@ -42,6 +42,19 @@ class MapGui extends JFrame {
     private MapField map;
     private JPanel panel;
 
+
+
+    public void changeWariorLocation(int warrior, char direction) {
+        map.changeWariorLocation(warrior,direction);
+       // updateMap();
+    }
+
+
+
+
+
+
+
     MapGui(MapAgent a, MapField map) {
         super(a.getLocalName());
         this.map = map;

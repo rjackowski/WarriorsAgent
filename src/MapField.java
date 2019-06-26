@@ -22,15 +22,39 @@ public class MapField {
         return sizey;
     }
 
-    public MapField(int warriors, int treasures)
-    {
+    public MapField(int warriors, int treasures) {
         warriorsLeft = warriors;
         treasuresLeft = treasures;
         generateMap();
     }
 
-    private void generateMap()
-    {
+    public void changeWariorLocation(int warrior, char direction) {
+        System.out.println("Warrior: "  + warrior);
+        Position pos = warriorsPosition.get(warrior);
+        System.out.println("X:" +pos.getX() + " Y:" + pos.getY() );
+        Position newPos = new Position(0,0);
+        switch (direction) {
+            case 'L':
+                newPos = new Position(pos.getX()-1,pos.getY());
+                break;
+            case 'R':
+                newPos = new Position(pos.getX()+1,pos.getY());
+                break;
+            case 'T':
+                newPos = new Position(pos.getX(),pos.getY()+1);
+                break;
+            case 'D':
+                newPos = new Position(pos.getX(),pos.getY()-1);
+                break;
+        }
+
+        setMapField(newPos,Integer.toString(warrior).charAt(0));
+        setMapField(pos,' ');
+        warriorsPosition.set(warrior,newPos);
+    }
+
+
+    private void generateMap() {
         List<Position> possibleTreasuresPos = new Vector<Position>();
         List<Position> possibleWarriorsPos = new Vector<Position>();
 
@@ -56,17 +80,15 @@ public class MapField {
             line = br.readLine();
 
             int tempLine = 0;
-            while(line != null) {
+            while (line != null) {
                 int numberOfInputedChars = 0;
-                for(int i = 1; i < line.length(); i+=2) {
+                for (int i = 1; i < line.length(); i += 2) {
                     char inputChar = line.charAt(i);
-                    if(inputChar == ' ' || inputChar == '#') {
+                    if (inputChar == ' ' || inputChar == '#') {
                         map[tempLine][numberOfInputedChars] = inputChar;
-                    }
-                    else
-                    {
+                    } else {
                         map[tempLine][numberOfInputedChars] = ' ';
-                        if(inputChar == 't')
+                        if (inputChar == 't')
                             possibleTreasuresPos.add(new Position(tempLine, numberOfInputedChars));
                         else
                             possibleWarriorsPos.add(new Position(tempLine, numberOfInputedChars));
@@ -79,45 +101,39 @@ public class MapField {
 
             generateTreasures(possibleTreasuresPos);
             generateWarriors(possibleWarriorsPos);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.toString());
         }
     }
 
-    private void generateTreasures(List<Position> positions)
-    {
+    private void generateTreasures(List<Position> positions) {
         Random random = new Random();
-        for(int i = 0; i < treasuresLeft; i++) {
+        for (int i = 0; i < treasuresLeft; i++) {
             int index = random.nextInt(positions.size());
             setMapField(positions.get(index), 't');
             positions.remove(index);
         }
     }
 
-    private void generateWarriors(List<Position> positions)
-    {
+    private void generateWarriors(List<Position> positions) {
         Random random = new Random();
         warriorsPosition = new Vector<Position>();
-        for(int i = 0; i < warriorsLeft; i++) {
+        for (int i = 0; i < warriorsLeft; i++) {
             int index = random.nextInt(positions.size());
-            setMapField(positions.get(index), (char)i);
+            setMapField(positions.get(index), (char) i);
             warriorsPosition.add(positions.get(index));
             positions.remove(index);
         }
     }
 
-    private void setMapField(Position p, char c)
-    {
+    private void setMapField(Position p, char c) {
         map[p.getX()][p.getY()] = c;
     }
 
 
-    private void printMap()
-    {
-        for(int i = 0; i < sizey; i++)
-        {
-            for(int j = 0; j < sizex; j++)
+    private void printMap() {
+        for (int i = 0; i < sizey; i++) {
+            for (int j = 0; j < sizex; j++)
                 System.out.print(map[i][j]);
             System.out.println();
         }
