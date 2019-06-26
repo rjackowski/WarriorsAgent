@@ -191,12 +191,12 @@ public class WarriorAgent extends Agent {
         }
 
         public void sendAttack(char target){
-            AttackPackage attPack = new AttackPackage(target,strength);
-            ACLMessage msg = new ACLMessage(ActionCode.ATTACK_DECISION);
+            DecisionPackage decPack = new DecisionPackage('A',target,strength);
+            ACLMessage msg = new ACLMessage(ActionCode.DECISION);
             System.out.println("Wysłano decyzje ataku na " + target);
             msg.addReceiver(myMapAgent);
             try{
-            msg.setContentObject(attPack);
+            msg.setContentObject(decPack);
             }
             catch(Exception ex) {
                 ex.printStackTrace();
@@ -208,10 +208,14 @@ public class WarriorAgent extends Agent {
         }
 
         public void sendMove(char decision){
-            ACLMessage msg = new ACLMessage(ActionCode.MOVE_DECISION);
+            DecisionPackage decPack = new DecisionPackage('M',decision);
+
+            ACLMessage msg = new ACLMessage(ActionCode.DECISION);
             System.out.println("Wysłano decyzje ruchu w " + decision);
             msg.addReceiver(myMapAgent);
-            msg.setContent(Character.toString(decision));
+            try{
+                msg.setContentObject(decPack);}
+            catch(Exception ex) {ex.printStackTrace();}
             msg.setConversationId("move_send");
             msg.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
             myAgent.send(msg);
@@ -260,8 +264,6 @@ public class WarriorAgent extends Agent {
                     template.addServices(sd);
                     try {
                         DFAgentDescription[] result = DFService.search(myAgent, template);
-                        System.out.println("Found the following map:");
-
                         for (int i = 0; i < result.length; ++i) {
                             myMapAgent = result[i].getName();
                             System.out.println(myMapAgent.getName());
@@ -275,7 +277,6 @@ public class WarriorAgent extends Agent {
                 break;
                 // Wysłanie zapytania o rejestracje na mapę
                 case 1:
-                    System.out.println("Send register request");
                     ACLMessage cfp = new ACLMessage(ActionCode.REGISTER);
                     cfp.addReceiver(myMapAgent);
                     // cfp.setContent(targetBookTitle);
@@ -289,13 +290,11 @@ public class WarriorAgent extends Agent {
                     break;
                 //Odebranie potwierdzenia i przydzielonego koloru
                 case 2:
-                    System.out.println("Receive");
                     ACLMessage reply = myAgent.receive(mt);
                     if (reply != null) {
                         // Reply received
                         if (reply.getPerformative() == ActionCode.REGISTER_ACCEPT) {
                             try {
-                                System.out.println("Jestem tu");
                                 color = new Color(Integer.parseInt(reply.getContent()));
                             }catch(Exception ex) {
                                 ex.printStackTrace();
@@ -305,10 +304,7 @@ public class WarriorAgent extends Agent {
                             doDelete();
                         }
 
-
-
                         if (color!= null) {
-                            System.out.println("color Done");
                             existOnMap = true;
                             myStateGui.setColor(color);
                             myGui.hideGui();
@@ -328,7 +324,6 @@ public class WarriorAgent extends Agent {
         public boolean done() {
 
             if (step == 3) {
-                System.out.println("Done");
                 return true;
             }
 
