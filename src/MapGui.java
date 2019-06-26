@@ -71,7 +71,8 @@ class MapGui extends JFrame {
                                 g.drawImage(treasureImage, drawXPosition, drawYPosition, null);
                             else {
                                 int warriorNumber = (int)drawType;
-                                g.setColor(MapAgent.warriorColors.get(warriorNumber));
+//                                g.setColor(MapAgent.warriorColors.get(warriorNumber));
+                                g.setColor(myAgent.getRegisteredWarriors().get(warriorNumber).getColor());
                                 g.fillOval(drawXPosition, drawYPosition, 25, 25);
                             }
                         }
