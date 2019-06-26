@@ -114,7 +114,7 @@ public class MapAgent extends Agent {
                         }
                         gameStep++;
                     }
-
+                    break;
                     //Odbieranie informacji o wykonanych ruchach
                     case 1:
                         MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.DECISION);
@@ -144,10 +144,22 @@ public class MapAgent extends Agent {
                             System.out.println("Odebrano wszystkie decyzje");
                             gameStep++;
                         }
-
+                        break;
                         //Wykonanie ruchów
                     case 2:
 
+                        for(int i = 0 ; i < registeredWarriors.size(); i++) {
+                            DecisionPackage decPackage = registeredWarriors.get(i).getDecPack();
+                            if (decPackage.getType() == 'M') {
+                                System.out.println("Wykonać ruch dla: " + i );
+                                mapGui.changeWariorLocation(i,'T');
+                                System.out.println("Wykonać ruch");
+                                try{
+                                Thread.sleep(2000);}
+                                catch(Exception ex){ex.printStackTrace();}
+                            }
+                        }
+                        break;
 
 
                 }
