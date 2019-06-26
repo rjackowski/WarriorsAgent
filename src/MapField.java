@@ -47,8 +47,7 @@ public class MapField {
                 newPos = new Position(pos.getX(),pos.getY()-1);
                 break;
         }
-
-        setMapField(newPos,Integer.toString(warrior).charAt(0));
+        setMapField(newPos,Character.forDigit(warrior, 10));
         setMapField(pos,' ');
         warriorsPosition.set(warrior,newPos);
     }
@@ -120,7 +119,7 @@ public class MapField {
         warriorsPosition = new Vector<Position>();
         for (int i = 0; i < warriorsLeft; i++) {
             int index = random.nextInt(positions.size());
-            setMapField(positions.get(index), (char) i);
+            setMapField(positions.get(index), Character.forDigit(i, 10));
             warriorsPosition.add(positions.get(index));
             positions.remove(index);
         }

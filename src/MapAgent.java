@@ -153,6 +153,7 @@ public class MapAgent extends Agent {
                             if (decPackage.getType() == 'M') {
                                 System.out.println("Wykonać ruch dla: " + i );
                                 mapGui.changeWariorLocation(i,'T');
+                                mapGui.updateMap();
                                 System.out.println("Wykonać ruch");
                                 try{
                                 Thread.sleep(2000);}
