@@ -8,6 +8,7 @@ import java.util.Vector;
 
 public class MapField {
 
+    private final int VISIBLE_FIELDS = 4;
     private char[][] map;
     private int sizex, sizey;
     private int treasuresLeft;
@@ -129,13 +130,37 @@ public class MapField {
         map[p.getX()][p.getY()] = c;
     }
 
-
     private void printMap() {
         for (int i = 0; i < sizey; i++) {
             for (int j = 0; j < sizex; j++)
                 System.out.print(map[i][j]);
             System.out.println();
         }
+    }
+
+    private Vector<Character> getFields(Position position, int dx, int dy)
+    {
+        Vector<Character> fields = new Vector<Character>();
+        int x = position.getX() + dx;
+        int y = position.getY() + dy;
+        for(int i = 0; i < VISIBLE_FIELDS; i++) {
+            fields.add(map[x][y]);
+            if(map[x][y] == '#')
+                break;
+            x += dx;
+            y += dy;
+        }
+        return fields;
+    }
+
+    public InformationPackage getVisibleFields(int index) {
+        InformationPackage infPackage = new InformationPackage();
+        Position warriorPosition = warriorsPosition.get(index);
+        infPackage.setLeftVisible(getFields(warriorPosition, -1, 0));
+        infPackage.setRightVisible(getFields(warriorPosition, 0, 1));
+        infPackage.setTopVisible(getFields(warriorPosition, 0, 1));
+        infPackage.setDownVisible(getFields(warriorPosition, 0, -1));
+        return infPackage;
     }
 
     public char getFromPosition(Position p) {

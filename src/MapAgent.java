@@ -33,6 +33,8 @@ public class MapAgent extends Agent {
     private boolean waitForAllWarriors = false;
 
     private int gameStep = 0;
+    private int warriorsMoved = 0;
+    private MapField map;
 
     public List<WarriorsDetails> getRegisteredWarriors() {
         return registeredWarriors;
@@ -72,9 +74,9 @@ public class MapAgent extends Agent {
     }
 
     public void onStartClick(int treasuresToSpawn) {
-        MapField m = new MapField(registeredWarriors.size(), treasuresToSpawn);
+        map = new MapField(registeredWarriors.size(), treasuresToSpawn);
         prepGui.hideGui();
-        mapGui = new MapGui(this, m);
+        mapGui = new MapGui(this, map);
         mapGui.showGui();
         mapGui.updateMap();
         startFlag = true;
@@ -91,22 +93,16 @@ public class MapAgent extends Agent {
                             ACLMessage msg = new ACLMessage(ActionCode.POSITION);
                             InformationPackage infPack = new InformationPackage();
                             Vector<Character> visible = new Vector<Character>();
-                            visible.add(' ');
-                            visible.add(' ');
-                            visible.add(' ');
-                            infPack.setDownVisible(visible);
-                            infPack.setRightVisible(visible);
-                            visible.set(2, '1');
-                            infPack.setTopVisible(visible);
-                            visible.set(2, ' ');
-                            visible.set(1, 's');
-                            infPack.setLeftVisible(visible);
+                            int index = registeredWarriors.indexOf(warrior);
+                            infPack = map.getVisibleFields(index);
                             msg.addReceiver(warrior.getAid());
+
                             try {
                                 msg.setContentObject(infPack);
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                             }
+
                             msg.setConversationId("move_send");
                             msg.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
                             myAgent.send(msg);
@@ -128,21 +124,17 @@ public class MapAgent extends Agent {
                                 ex.printStackTrace();
                             }
                             int index = getListIndexByAID(senderAID);
-                            if(index != -1) {
+                            if(index != -1 && !registeredWarriors.get(index).isDecisionFlag()) {
                                 registeredWarriors.get(index).setDecisionFlag(true);
                                 registeredWarriors.get(index).setDecPack(decPack);
+                                warriorsMoved++;
                             }
                         }
 
-                        int count = 0;
-                        for (WarriorsDetails warrior : registeredWarriors) {
-                            if (!warrior.isDecisionFlag())
-                                count ++;
-                        }
-
-                        if (count == 0) {
+                        if (warriorsMoved == registeredWarriors.size()) {
                             System.out.println("Odebrano wszystkie decyzje");
                             gameStep++;
+                            warriorsMoved = 0;
                         }
                         break;
                         //Wykonanie ruchów
@@ -153,23 +145,27 @@ public class MapAgent extends Agent {
                             if (decPackage.getType() == 'M') {
                                 System.out.println("Wykonać ruch dla: " + i );
                                 mapGui.changeWariorLocation(i,'T');
-                                mapGui.updateMap();
                                 System.out.println("Wykonać ruch");
                                 try{
                                 Thread.sleep(2000);}
                                 catch(Exception ex){ex.printStackTrace();}
                             }
                         }
+                        resetWarriorsFlag();
+                        mapGui.updateMap();
+                        gameStep = 0;
                         break;
-
-
                 }
-
-
             }
-
         }
     }
+
+    private void resetWarriorsFlag()
+    {
+        for(WarriorsDetails warrior: registeredWarriors)
+            warrior.setDecisionFlag(false);
+    }
+
     public int getListIndexByAID(AID aid) {
         for(int i = 0; i< getRegisteredWarriors().size(); i++) {
             System.out.println("1:"+ aid);

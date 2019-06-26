@@ -6,6 +6,9 @@ import java.util.Vector;
 public class InformationPackage implements Serializable {
     private static final long serialVersionUID = 1L;
     private Vector<Character> topVisible;
+    private Vector<Character> downVisible;
+    private Vector<Character> rightVisible;
+    private Vector<Character> leftVisible;
 
     public Vector<Character> getDownVisible() {
         return downVisible;
@@ -14,10 +17,6 @@ public class InformationPackage implements Serializable {
     public void setDownVisible(Vector<Character> downVisible) {
         this.downVisible = downVisible;
     }
-
-    private Vector<Character> downVisible;
-    private Vector<Character> rightVisible;
-    private Vector<Character> leftVisible;
 
     public Vector<Character> getTopVisible() {
         return topVisible;
