@@ -8,5 +8,6 @@ public class ActionCode {
     public static final int DECISION = 4;
     public static final int POSITION = 5;
     //public static final int MOVE_DECISION = 6;
+    public static final int TREASURE_PICKED = 7;
 
 }

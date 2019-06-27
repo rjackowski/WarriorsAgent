@@ -29,7 +29,8 @@ public class MapField {
         generateMap();
     }
 
-    public void changeWariorLocation(int warrior, char direction) {
+    public boolean changeWariorLocation(int warrior, char direction) {
+        boolean treasureCollected = false;
         System.out.println("Warrior: "  + warrior);
         Position pos = warriorsPosition.get(warrior);
         System.out.println("X:" +pos.getX() + " Y:" + pos.getY() );
@@ -48,11 +49,15 @@ public class MapField {
                 newPos = new Position(pos.getX(),pos.getY()-1);
                 break;
         }
+
+        if(map[newPos.getX()][newPos.getY()] == 't')
+            treasureCollected = true;
+
         setMapField(newPos,Character.forDigit(warrior, 10));
         setMapField(pos,' ');
         warriorsPosition.set(warrior,newPos);
+        return treasureCollected;
     }
-
 
     private void generateMap() {
         List<Position> possibleTreasuresPos = new Vector<Position>();
