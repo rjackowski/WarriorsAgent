@@ -48,7 +48,7 @@ public class WarriorAgent extends Agent {
 
     protected void setup() {
         System.out.println("Warrior created");
-
+        coinAmount = 0;
         myGui = new WarriorAgentGui(this);
         myStateGui = new WarriorAgentStateGui(this);
         myGui.showGui();
@@ -118,6 +118,7 @@ public class WarriorAgent extends Agent {
                                 Treasure treasure = (Treasure) msg.getContentObject();
                                 live += treasure.getAddHp();
                                 strength += treasure.getAddStrength();
+                                coinAmount++;
                                 myStateGui.refreshGui();
                             } catch (UnreadableException e) {
                                 e.printStackTrace();
