@@ -146,11 +146,12 @@ public class MapAgent extends Agent {
                                 System.out.println("Wykonać ruch dla: " + i );
                                 mapGui.changeWariorLocation(i,'T');
                                 System.out.println("Wykonać ruch");
-                                try{
-                                Thread.sleep(2000);}
-                                catch(Exception ex){ex.printStackTrace();}
+
                             }
                         }
+                        try{
+                            Thread.sleep(2000);}
+                        catch(Exception ex){ex.printStackTrace();}
                         resetWarriorsFlag();
                         mapGui.updateMap();
                         gameStep = 0;
