@@ -9,6 +9,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -96,27 +97,39 @@ public class WarriorAgent extends Agent {
                     myAgent.addBehaviour(reg);
                 // Wojownik znajduje się na mapie
                 else {
+                    //pobranie możliwych ruchów
                     MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.POSITION);
                     ACLMessage msg = myAgent.receive(mt);
                     if (msg != null) {
                         try {
                             infoPack = (InformationPackage) msg.getContentObject();
                             addBehaviour(new MakeMoveDecision(infoPack));
+                            myAgent.addBehaviour(new SubstrLive(1));
                             System.out.println("Otrzymano możliwe ruchy");
                         } catch(Exception ex) {
                             ex.printStackTrace();
                         }
                     }
                     else {
-                        block();
+                        mt = MessageTemplate.MatchPerformative(ActionCode.TREASURE_PICKED);
+                        msg = myAgent.receive(mt);
+                        if(msg != null) {
+                            try {
+                                Treasure treasure = (Treasure) msg.getContentObject();
+                                live += treasure.getAddHp();
+                                strength += treasure.getAddStrength();
+                                myStateGui.refreshGui();
+                            } catch (UnreadableException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        else
+                            block();
                     }
 
-                    myAgent.addBehaviour(new SubstrLive(1));
-                    myStateGui.refreshGui();
                 }
             }
         }
-
     }
 
 
