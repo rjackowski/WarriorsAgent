@@ -34,6 +34,7 @@ public class WarriorAgent extends Agent {
     private boolean startFlag = false;
     private AID myMapAgent;
     private RegisterOnMap reg;
+    private char lastDecision;
 
     public Color getColor() {
         return color;
@@ -46,7 +47,6 @@ public class WarriorAgent extends Agent {
 
 
     protected void setup() {
-        System.out.println("Warrior created");
 
         myGui = new WarriorAgentGui(this);
         myStateGui = new WarriorAgentStateGui(this);
@@ -77,14 +77,25 @@ public class WarriorAgent extends Agent {
 
 
     private class SubstrLive extends OneShotBehaviour {
-       private int value;
+      DecisionPackage decPack;
+        ACLMessage msg;
+      public SubstrLive(DecisionPackage decPack) {
+          this.decPack = decPack;
+      }
 
-        SubstrLive(int value) {
-           this.value = value;
-       }
 
         public void action() {
-            live = live - value;
+            live = live - decPack.getStrength();
+            msg = new ACLMessage(ActionCode.LIVESTATE);
+            msg.addReceiver(myMapAgent);
+            if(live > 0)
+                msg.setContent("ALIVE - LIVE: " + live  );
+            else
+                msg.setContent("DEAD");
+            System.out.println(msg.getContent());
+            myAgent.send(msg);
+
+
         }
     }
 
@@ -102,7 +113,6 @@ public class WarriorAgent extends Agent {
                         try {
                             infoPack = (InformationPackage) msg.getContentObject();
                             addBehaviour(new MakeMoveDecision(infoPack));
-                            System.out.println("Otrzymano możliwe ruchy");
                         } catch(Exception ex) {
                             ex.printStackTrace();
                         }
@@ -111,7 +121,22 @@ public class WarriorAgent extends Agent {
                         block();
                     }
 
-                    myAgent.addBehaviour(new SubstrLive(1));
+
+                     mt = MessageTemplate.MatchPerformative(ActionCode.ATTACK);
+                     msg = myAgent.receive(mt);
+                    if (msg != null) {
+                        try {
+
+                            DecisionPackage decisionPackage  = (DecisionPackage) msg.getContentObject();
+                            addBehaviour(new SubstrLive(decisionPackage));
+                        } catch(Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    else {
+                        block();
+                    }
+
                     myStateGui.refreshGui();
                 }
             }
@@ -144,9 +169,24 @@ public class WarriorAgent extends Agent {
            // temp = findPosition('s',infPack.getBottomVisible());
 
             //Szukanie skarbu i przeciwnika
+            if(infPack.getLeftVisible().size() == 1 || lastDecision == 'R')
+                pointForLeft = - 10000;
+                else
             pointForLeft += countProfit(infPack.getLeftVisible());
+
+            if(infPack.getRightVisible().size() == 1 || lastDecision == 'L')
+                pointForRight = - 10000;
+                else
             pointForRight += countProfit(infPack.getRightVisible());
+
+            if(infPack.getDownVisible().size() == 1 || lastDecision == 'T')
+                pointForDown = - 10000;
+            else
             pointForDown += countProfit(infPack.getDownVisible());
+
+            if(infPack.getTopVisible().size() == 1 || lastDecision == 'D')
+                pointForTop = - 10000;
+            else
             pointForTop += countProfit(infPack.getTopVisible());
 
             decision = 'L';
@@ -184,16 +224,17 @@ public class WarriorAgent extends Agent {
             if(warriorsList.contains(position)){
                 sendAttack(position);
             }
-            else
-                sendMove(decision);
+            else {
+                lastDecision = decision;
 
+                sendMove(decision);
+            }
 
         }
 
         public void sendAttack(char target){
             DecisionPackage decPack = new DecisionPackage('A',target,strength);
             ACLMessage msg = new ACLMessage(ActionCode.DECISION);
-            System.out.println("Wysłano decyzje ataku na " + target);
             msg.addReceiver(myMapAgent);
             try{
             msg.setContentObject(decPack);
@@ -211,7 +252,6 @@ public class WarriorAgent extends Agent {
             DecisionPackage decPack = new DecisionPackage('M',decision);
 
             ACLMessage msg = new ACLMessage(ActionCode.DECISION);
-            System.out.println("Wysłano decyzje ruchu w " + decision);
             msg.addReceiver(myMapAgent);
             try{
                 msg.setContentObject(decPack);}
@@ -260,13 +300,11 @@ public class WarriorAgent extends Agent {
                     DFAgentDescription template = new DFAgentDescription();
                     ServiceDescription sd = new ServiceDescription();
                     sd.setType("map");
-                    System.out.println("Look for map");
                     template.addServices(sd);
                     try {
                         DFAgentDescription[] result = DFService.search(myAgent, template);
                         for (int i = 0; i < result.length; ++i) {
                             myMapAgent = result[i].getName();
-                            System.out.println(myMapAgent.getName());
                         }
                     } catch (FIPAException fe) {
                         fe.printStackTrace();
