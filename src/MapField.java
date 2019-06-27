@@ -72,12 +72,32 @@ public class MapField {
                 line = br.readLine();
             }
 
-            map = new char[countLines][lineLength];
+            map = new char[lineLength][countLines];
             sizey = countLines;
             sizex = lineLength;
 
             br = new BufferedReader(new FileReader("Resources/mapa.txt"));
             line = br.readLine();
+
+//            int tempLine = 0;
+//            while (line != null) {
+//                int numberOfInputedChars = 0;
+//                for (int i = 1; i < line.length(); i += 2) {
+//                    char inputChar = line.charAt(i);
+//                    if (inputChar == ' ' || inputChar == '#') {
+//                        map[tempLine][numberOfInputedChars] = inputChar;
+//                    } else {
+//                        map[tempLine][numberOfInputedChars] = ' ';
+//                        if (inputChar == 't')
+//                            possibleTreasuresPos.add(new Position(tempLine, numberOfInputedChars));
+//                        else
+//                            possibleWarriorsPos.add(new Position(tempLine, numberOfInputedChars));
+//                    }
+//                    numberOfInputedChars++;
+//                }
+//                line = br.readLine();
+//                tempLine++;
+//            }
 
             int tempLine = 0;
             while (line != null) {
@@ -85,19 +105,20 @@ public class MapField {
                 for (int i = 1; i < line.length(); i += 2) {
                     char inputChar = line.charAt(i);
                     if (inputChar == ' ' || inputChar == '#') {
-                        map[tempLine][numberOfInputedChars] = inputChar;
+                        map[numberOfInputedChars][tempLine] = inputChar;
                     } else {
-                        map[tempLine][numberOfInputedChars] = ' ';
+                        map[numberOfInputedChars][tempLine] = ' ';
                         if (inputChar == 't')
-                            possibleTreasuresPos.add(new Position(tempLine, numberOfInputedChars));
+                            possibleTreasuresPos.add(new Position(numberOfInputedChars,tempLine));
                         else
-                            possibleWarriorsPos.add(new Position(tempLine, numberOfInputedChars));
+                            possibleWarriorsPos.add(new Position(numberOfInputedChars,tempLine));
                     }
                     numberOfInputedChars++;
                 }
                 line = br.readLine();
                 tempLine++;
             }
+
 
             generateTreasures(possibleTreasuresPos);
             generateWarriors(possibleWarriorsPos);
@@ -157,7 +178,7 @@ public class MapField {
         InformationPackage infPackage = new InformationPackage();
         Position warriorPosition = warriorsPosition.get(index);
         infPackage.setLeftVisible(getFields(warriorPosition, -1, 0));
-        infPackage.setRightVisible(getFields(warriorPosition, 0, 1));
+        infPackage.setRightVisible(getFields(warriorPosition, 1, 0));
         infPackage.setTopVisible(getFields(warriorPosition, 0, 1));
         infPackage.setDownVisible(getFields(warriorPosition, 0, -1));
         return infPackage;

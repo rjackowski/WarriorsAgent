@@ -71,7 +71,7 @@ class MapGui extends JFrame {
                     int drawXPosition = wallImage.getHeight() * i;
                     for (int j = 0; j < map.getSizeY(); j++) {
                         int drawYPosition = wallImage.getWidth() * j;
-                        char drawType = map.getFromPosition(j, i);
+                        char drawType = map.getFromPosition(i, j);
                         BufferedImage tempImage;
                         if (drawType == '#')
                             tempImage = wallImage;
