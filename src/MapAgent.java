@@ -157,6 +157,41 @@ public class MapAgent extends Agent {
                             }
                         }
 
+                        Vector<WarriorsDetails> warriorsCollectedTreasure = new Vector<WarriorsDetails>();
+                        for(int i = 0 ; i < registeredWarriors.size(); i++) {
+                            DecisionPackage decPackage = registeredWarriors.get(i).getDecPack();
+                            if (decPackage.getType() == 'M') {
+                                System.out.println("Wykonać ruch dla: " + i );
+                                if(map.changeWariorLocation(i,'T'))
+                                    warriorsCollectedTreasure.add(registeredWarriors.get(i));
+
+                                System.out.println("Wykonać ruch");
+
+                            }
+                        }
+
+                        for(WarriorsDetails warrior : warriorsCollectedTreasure) {
+                            ACLMessage m = new ACLMessage(ActionCode.TREASURE_PICKED);
+                            Treasure treasure = new Treasure();
+                            Vector<Character> visible = new Vector<Character>();
+                            int index = registeredWarriors.indexOf(warrior);
+                            m.addReceiver(warrior.getAid());
+
+                            try {
+                                m.setContentObject(treasure);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+
+                            m.setConversationId("treasure_picked");
+                            myAgent.send(m);
+                            System.out.println("Wyslano zebranie skarbu");
+                        }
+                        try{
+                            Thread.sleep(2000);}
+                        catch(Exception ex){ex.printStackTrace();}
+                        resetWarriorsFlag();
+                    
                         mapGui.updateMap();
                         try {
                             Thread.sleep(2000);

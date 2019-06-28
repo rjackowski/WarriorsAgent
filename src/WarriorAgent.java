@@ -9,6 +9,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,7 +48,9 @@ public class WarriorAgent extends Agent {
 
 
     protected void setup() {
-
+      
+        System.out.println("Warrior created");
+        coinAmount = 0;
         myGui = new WarriorAgentGui(this);
         myStateGui = new WarriorAgentStateGui(this);
         myGui.showGui();
@@ -107,6 +110,7 @@ public class WarriorAgent extends Agent {
                     myAgent.addBehaviour(reg);
                 // Wojownik znajduje się na mapie
                 else {
+                    //pobranie możliwych ruchów
                     MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.POSITION);
                     ACLMessage msg = myAgent.receive(mt);
                     if (msg != null) {
@@ -118,10 +122,22 @@ public class WarriorAgent extends Agent {
                         }
                     }
                     else {
-                        block();
+                        mt = MessageTemplate.MatchPerformative(ActionCode.TREASURE_PICKED);
+                        msg = myAgent.receive(mt);
+                        if(msg != null) {
+                            try {
+                                Treasure treasure = (Treasure) msg.getContentObject();
+                                live += treasure.getAddHp();
+                                strength += treasure.getAddStrength();
+                                coinAmount++;
+                                myStateGui.refreshGui();
+                            } catch (UnreadableException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        else
+                            block();
                     }
-
-
                      mt = MessageTemplate.MatchPerformative(ActionCode.ATTACK);
                      msg = myAgent.receive(mt);
                     if (msg != null) {
@@ -141,7 +157,6 @@ public class WarriorAgent extends Agent {
                 }
             }
         }
-
     }
 
 
