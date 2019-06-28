@@ -32,7 +32,7 @@ public class MapAgent extends Agent {
     private boolean startFlag = false;
     private boolean waitForAllWarriors = false;
 
-    private int gameStep = 0;
+    private GameSteps gameStep = GameSteps.SEND_MOVES;
     private int warriorsMoved = 0;
     private MapField map;
 
@@ -88,7 +88,7 @@ public class MapAgent extends Agent {
                 switch (gameStep) {
 
                     //Wysłanie informacji o możliwych ruchach
-                    case 0: {
+                    case SEND_MOVES: {
                         for (WarriorsDetails warrior : registeredWarriors) {
                             ACLMessage msg = new ACLMessage(ActionCode.POSITION);
                             InformationPackage infPack = new InformationPackage();
@@ -108,11 +108,11 @@ public class MapAgent extends Agent {
                             myAgent.send(msg);
                             System.out.println("Wysłano mozliwe ruchy ");
                         }
-                        gameStep++;
+                        gameStep = GameSteps.RECEIVE_MOVES;
                     }
                     break;
                     //Odbieranie informacji o wykonanych ruchach
-                    case 1:
+                    case RECEIVE_MOVES:
                         MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.DECISION);
                         ACLMessage msg = myAgent.receive(mt);
                         DecisionPackage decPack = new DecisionPackage();
@@ -124,7 +124,7 @@ public class MapAgent extends Agent {
                                 ex.printStackTrace();
                             }
                             int index = getListIndexByAID(senderAID);
-                            if(index != -1 && !registeredWarriors.get(index).isDecisionFlag()) {
+                            if (index != -1 && !registeredWarriors.get(index).isDecisionFlag()) {
                                 registeredWarriors.get(index).setDecisionFlag(true);
                                 registeredWarriors.get(index).setDecPack(decPack);
                                 warriorsMoved++;
@@ -132,13 +132,31 @@ public class MapAgent extends Agent {
                         }
 
                         if (warriorsMoved == registeredWarriors.size()) {
-                            System.out.println("Odebrano wszystkie decyzje");
-                            gameStep++;
+
                             warriorsMoved = 0;
+                            gameStep=GameSteps.MAKE_MOVES;
+
                         }
                         break;
-                        //Wykonanie ruchów
-                    case 2:
+                    //Wykonanie ruchów
+                    case MAKE_MOVES:
+
+                        for (int i = 0; i < registeredWarriors.size(); i++) {
+                            DecisionPackage decPackage = registeredWarriors.get(i).getDecPack();
+                            if (decPackage.getType() == 'M') {
+                                mapGui.changeWariorLocation(i, decPackage.getDirection());
+                            }
+                            ACLMessage msgAttack = new ACLMessage(ActionCode.ATTACK);
+                            msgAttack.addReceiver(registeredWarriors.get(i).getAid());
+                            DecisionPackage attackPack = new DecisionPackage('A', i, 15);
+                            try {
+                                msgAttack.setContentObject(attackPack);
+                                myAgent.send(msgAttack);
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+
                         Vector<WarriorsDetails> warriorsCollectedTreasure = new Vector<WarriorsDetails>();
                         for(int i = 0 ; i < registeredWarriors.size(); i++) {
                             DecisionPackage decPackage = registeredWarriors.get(i).getDecPack();
@@ -173,32 +191,66 @@ public class MapAgent extends Agent {
                             Thread.sleep(2000);}
                         catch(Exception ex){ex.printStackTrace();}
                         resetWarriorsFlag();
+                    
                         mapGui.updateMap();
-                        gameStep = 0;
+                        try {
+                            Thread.sleep(2000);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
+
+                        resetWarriorsFlag();
+                        gameStep = GameSteps.RECEIVE_DEAD;
+
                         break;
+                    //Odebranie info o umierającyc
+                    case RECEIVE_DEAD:
+                         mt = MessageTemplate.MatchPerformative(ActionCode.LIVESTATE);
+                         msg = myAgent.receive(mt);
+                        if (msg != null) {
+                            AID senderAID = msg.getSender();
+                            String result = msg.getContent();
+
+                            int index = getListIndexByAID(senderAID);
+
+                            if (result == "DEAD")
+                                registeredWarriors.get(index).setDeadFlag(true);
+                            if (index != -1 && !registeredWarriors.get(index).isDecisionFlag()) {
+                                registeredWarriors.get(index).setDecisionFlag(true);
+                                warriorsMoved++;
+                            }
+                        }
+                        if (warriorsMoved == registeredWarriors.size()) {
+                            resetWarriorsFlag();
+                            warriorsMoved = 0;
+                            gameStep=GameSteps.SEND_MOVES;
+
+                        }
+
+                        break;
+
+
                 }
             }
         }
-    }
 
-    private void resetWarriorsFlag()
-    {
-        for(WarriorsDetails warrior: registeredWarriors)
-            warrior.setDecisionFlag(false);
-    }
-
-    public int getListIndexByAID(AID aid) {
-        for(int i = 0; i< getRegisteredWarriors().size(); i++) {
-            System.out.println("1:"+ aid);
-            System.out.println("2:"+ getRegisteredWarriors().get(i).getAid());
-            if(getRegisteredWarriors().get(i).getAid().equals(aid)) {
-                return i;
-            }
+        private void resetWarriorsFlag() {
+            for (WarriorsDetails warrior : registeredWarriors)
+                warrior.setDecisionFlag(false);
         }
-        return -1;
+
+        public int getListIndexByAID(AID aid) {
+            for (int i = 0; i < getRegisteredWarriors().size(); i++) {
+                System.out.println("1:" + aid);
+                System.out.println("2:" + getRegisteredWarriors().get(i).getAid());
+                if (getRegisteredWarriors().get(i).getAid().equals(aid)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
     }
-
-
 
     private class GetRegistration extends CyclicBehaviour {
 
@@ -234,5 +286,12 @@ public class MapAgent extends Agent {
             }
         }
 
+    }
+
+    private enum GameSteps {
+        SEND_MOVES,
+        RECEIVE_MOVES,
+        MAKE_MOVES,
+        RECEIVE_DEAD
     }
 }

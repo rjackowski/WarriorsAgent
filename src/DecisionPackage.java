@@ -22,11 +22,11 @@ public class DecisionPackage implements Serializable {
     private char type; // A-atttack , M-move
     private char direction; // L-left R , T, D
 
-    private char target;
+    private int target;
     private int strength;
 
     public DecisionPackage() {}
-    public DecisionPackage(char type, Character nTarget, int nStrength) {
+    public DecisionPackage(char type, int nTarget, int nStrength) {
        this.type = type;
         target = nTarget;
         strength = nStrength;
@@ -37,11 +37,11 @@ public class DecisionPackage implements Serializable {
         this.direction = direction;
     }
 
-    public char getTarget() {
+    public int getTarget() {
         return target;
     }
 
-    public void setTarget(char target) {
+    public void setTarget(int target) {
         this.target = target;
     }
 
