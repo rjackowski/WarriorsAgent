@@ -11,5 +11,6 @@ public class ActionCode {
 
 
     //public static final int MOVE_DECISION = 6;
+    public static final int TREASURE_PICKED = 7;
 
 }

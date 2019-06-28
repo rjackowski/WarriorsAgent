@@ -9,6 +9,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,7 +48,9 @@ public class WarriorAgent extends Agent {
 
 
     protected void setup() {
-
+      
+        System.out.println("Warrior created");
+        coinAmount = 0;
         myGui = new WarriorAgentGui(this);
         myStateGui = new WarriorAgentStateGui(this);
         myGui.showGui();
@@ -107,9 +110,12 @@ public class WarriorAgent extends Agent {
                     myAgent.addBehaviour(reg);
                 // Wojownik znajduje się na mapie
                 else {
+                    //pobranie możliwych ruchów
+                    boolean messageReceived = false;
                     MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.POSITION);
                     ACLMessage msg = myAgent.receive(mt);
                     if (msg != null) {
+                        messageReceived = true;
                         try {
                             infoPack = (InformationPackage) msg.getContentObject();
                             addBehaviour(new MakeMoveDecision(infoPack));
@@ -117,14 +123,28 @@ public class WarriorAgent extends Agent {
                             ex.printStackTrace();
                         }
                     }
-                    else {
-                        block();
+
+                    //receive info about picked treasure
+                    mt = MessageTemplate.MatchPerformative(ActionCode.TREASURE_PICKED);
+                    msg = myAgent.receive(mt);
+                    if(msg != null) {
+                        messageReceived = true;
+                        try {
+                            Treasure treasure = (Treasure) msg.getContentObject();
+                            live += treasure.getAddHp();
+                            strength += treasure.getAddStrength();
+                            coinAmount++;
+                            myStateGui.refreshGui();
+                        } catch (UnreadableException e) {
+                            e.printStackTrace();
+                        }
                     }
 
-
+                    //receive atack info
                      mt = MessageTemplate.MatchPerformative(ActionCode.ATTACK);
                      msg = myAgent.receive(mt);
                     if (msg != null) {
+                        messageReceived = true;
                         try {
 
                             DecisionPackage decisionPackage  = (DecisionPackage) msg.getContentObject();
@@ -133,15 +153,14 @@ public class WarriorAgent extends Agent {
                             ex.printStackTrace();
                         }
                     }
-                    else {
+
+                    if(!messageReceived)
                         block();
-                    }
 
                     myStateGui.refreshGui();
                 }
             }
         }
-
     }
 
 
