@@ -31,8 +31,9 @@ public class MapField {
 
     public boolean changeWariorLocation(int warrior, char direction) {
         boolean treasureCollected = false;
-        System.out.println("Warrior: "  + warrior);
+       // System.out.println("Warrior: "  + warrior);
         Position pos = warriorsPosition.get(warrior);
+
         System.out.println("X:" +pos.getX() + " Y:" + pos.getY() );
         Position newPos = new Position(0,0);
         switch (direction) {
@@ -43,10 +44,10 @@ public class MapField {
                 newPos = new Position(pos.getX()+1,pos.getY());
                 break;
             case 'T':
-                newPos = new Position(pos.getX(),pos.getY()+1);
+                newPos = new Position(pos.getX(),pos.getY()-1);
                 break;
             case 'D':
-                newPos = new Position(pos.getX(),pos.getY()-1);
+                newPos = new Position(pos.getX(),pos.getY()+1);
                 break;
         }
 
@@ -128,7 +129,7 @@ public class MapField {
             generateTreasures(possibleTreasuresPos);
             generateWarriors(possibleWarriorsPos);
         } catch (Exception e) {
-            System.out.println(e.toString());
+          //  System.out.println(e.toString());
         }
     }
 
@@ -184,8 +185,8 @@ public class MapField {
         Position warriorPosition = warriorsPosition.get(index);
         infPackage.setLeftVisible(getFields(warriorPosition, -1, 0));
         infPackage.setRightVisible(getFields(warriorPosition, 1, 0));
-        infPackage.setTopVisible(getFields(warriorPosition, 0, 1));
-        infPackage.setDownVisible(getFields(warriorPosition, 0, -1));
+        infPackage.setTopVisible(getFields(warriorPosition, 0, -1));
+        infPackage.setDownVisible(getFields(warriorPosition, 0, 1));
         return infPackage;
     }
 

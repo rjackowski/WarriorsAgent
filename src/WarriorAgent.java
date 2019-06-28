@@ -15,6 +15,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.Console;
 import java.io.ObjectOutputStream;
+import java.util.Random;
 import java.util.Vector;
 import java.util.List;
 
@@ -48,8 +49,7 @@ public class WarriorAgent extends Agent {
 
 
     protected void setup() {
-      
-        System.out.println("Warrior created");
+
         coinAmount = 0;
         myGui = new WarriorAgentGui(this);
         myStateGui = new WarriorAgentStateGui(this);
@@ -95,7 +95,6 @@ public class WarriorAgent extends Agent {
                 msg.setContent("ALIVE - LIVE: " + live  );
             else
                 msg.setContent("DEAD");
-            System.out.println(msg.getContent());
             myAgent.send(msg);
 
 
@@ -146,7 +145,6 @@ public class WarriorAgent extends Agent {
                     if (msg != null) {
                         messageReceived = true;
                         try {
-
                             DecisionPackage decisionPackage  = (DecisionPackage) msg.getContentObject();
                             addBehaviour(new SubstrLive(decisionPackage));
                         } catch(Exception ex) {
@@ -170,6 +168,11 @@ public class WarriorAgent extends Agent {
         float pointForRight;
         float pointForDown;
         float pointForTop;
+        boolean leftBlocked = false;
+        boolean rightBlocked = false;
+        boolean downBlocked = false;
+        boolean topBlocked = false;
+        List<Character> decisionList;
         List<Character> warriorsList;
 
 
@@ -181,49 +184,70 @@ public class WarriorAgent extends Agent {
         }
 
         public void action() {
-            char decision;
-            float maxPoint;
-
-
+            char decision = ' ';
+            float maxPoint = -10000000 ;
+            decisionList = new Vector<Character>();
            // temp = findPosition('s',infPack.getBottomVisible());
+            if (infPack.getLeftVisible().size() == 1) leftBlocked = true;
+            if (infPack.getRightVisible().size() == 1) rightBlocked = true;
+            if (infPack.getDownVisible().size() == 1) downBlocked = true;
+            if (infPack.getTopVisible().size() == 1) topBlocked = true;
 
             //Szukanie skarbu i przeciwnika
-            if(infPack.getLeftVisible().size() == 1 || lastDecision == 'R')
+            if  (lastDecision == 'R')
                 pointForLeft = - 10000;
-                else
+            else
             pointForLeft += countProfit(infPack.getLeftVisible());
 
-            if(infPack.getRightVisible().size() == 1 || lastDecision == 'L')
+            if(lastDecision == 'L')
                 pointForRight = - 10000;
                 else
             pointForRight += countProfit(infPack.getRightVisible());
 
-            if(infPack.getDownVisible().size() == 1 || lastDecision == 'T')
+            if( lastDecision == 'T')
                 pointForDown = - 10000;
             else
             pointForDown += countProfit(infPack.getDownVisible());
 
-            if(infPack.getTopVisible().size() == 1 || lastDecision == 'D')
+            if( lastDecision == 'D')
                 pointForTop = - 10000;
             else
-            pointForTop += countProfit(infPack.getTopVisible());
+             pointForTop += countProfit(infPack.getTopVisible());
 
+            if(!leftBlocked) {
             decision = 'L';
-            maxPoint = pointForLeft;
-            if (pointForRight > maxPoint) {
+            decisionList.add(decision);
+            maxPoint = pointForLeft;}
+
+            if(!rightBlocked) {
+            if (pointForRight >= maxPoint) {
+                if (pointForRight > maxPoint)
+                    decisionList.clear();
                 maxPoint = pointForRight;
                 decision = 'R';
+                decisionList.add(decision);
             }
-            if (pointForDown > maxPoint) {
+           }
+            if(!downBlocked) {
+            if (pointForDown >= maxPoint) {
+                if (pointForDown > maxPoint)
+                    decisionList.clear();
                 maxPoint = pointForDown;
                 decision = 'D';
-            }
+                decisionList.add(decision);
+            }}
+            if(!topBlocked) {
             if (pointForTop > maxPoint) {
+                if (pointForTop > maxPoint)
+                    decisionList.clear();
                 maxPoint = pointForTop;
-                decision = 'T';
+                decision = 'T';}
+                decisionList.add(decision);
             }
+            Random generator = new Random();
+            int index = generator.nextInt(decisionList.size());
 
-            sendDecision(decision);
+            sendDecision(decisionList.get(index));
 
         }
 
@@ -232,12 +256,16 @@ public class WarriorAgent extends Agent {
             switch(decision) {
                 case 'L':
                     position = infPack.getLeftVisible().firstElement();
+                    break;
                 case 'R':
                     position = infPack.getRightVisible().firstElement();
+                    break;
                 case 'D':
                     position = infPack.getDownVisible().firstElement();
+                    break;
                 case 'T':
                     position = infPack.getTopVisible().firstElement();
+                    break;
             }
 
             if(warriorsList.contains(position)){
@@ -245,8 +273,9 @@ public class WarriorAgent extends Agent {
             }
             else {
                 lastDecision = decision;
-
+//System.out.println(decision);
                 sendMove(decision);
+              //  sendMove('R');
             }
 
         }
