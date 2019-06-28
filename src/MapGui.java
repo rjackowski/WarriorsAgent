@@ -41,19 +41,12 @@ class MapGui extends JFrame {
     private BufferedImage wallImage, floorImage, treasureImage;
     private MapField map;
     private JPanel panel;
-
-
+    private boolean paintText = false;
+    private String textToPrint;
 
     public void changeWariorLocation(int warrior, char direction) {
         map.changeWariorLocation(warrior,direction);
-       // updateMap();
     }
-
-
-
-
-
-
 
     MapGui(MapAgent a, MapField map) {
         super(a.getLocalName());
@@ -67,29 +60,9 @@ class MapGui extends JFrame {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
-                for (int i = 0; i < map.getSizeX(); i++) {
-                    int drawXPosition = wallImage.getHeight() * i;
-                    for (int j = 0; j < map.getSizeY(); j++) {
-                        int drawYPosition = wallImage.getWidth() * j;
-                        char drawType = map.getFromPosition(i, j);
-                        BufferedImage tempImage;
-                        if (drawType == '#')
-                            tempImage = wallImage;
-                        else
-                            tempImage = floorImage;
-                        g.drawImage(tempImage, drawXPosition, drawYPosition, null);
-
-                        if(drawType != '#' && drawType != ' ') {
-                            if (drawType == 't')
-                                g.drawImage(treasureImage, drawXPosition, drawYPosition, null);
-                            else {
-                                int warriorNumber = Character.getNumericValue(drawType);
-                                g.setColor(myAgent.getRegisteredWarriors().get(warriorNumber).getColor());
-                                g.fillOval(drawXPosition, drawYPosition, 25, 25);
-                            }
-                        }
-                    }
-                }
+                drawFields(g);
+                if(paintText)
+                    paintText(g);
             }
         };
 
@@ -104,6 +77,41 @@ class MapGui extends JFrame {
 
         setResizable(false);
     }
+
+    private void paintText(Graphics g)
+    {
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("TimesRoman", Font.BOLD, 30));
+        g.drawString(textToPrint, panel.getWidth() / 2 - 150, panel.getHeight() / 2 - 50);
+    }
+
+    private void drawFields(Graphics g)
+    {
+        for (int i = 0; i < map.getSizeX(); i++) {
+            int drawXPosition = wallImage.getHeight() * i;
+            for (int j = 0; j < map.getSizeY(); j++) {
+                int drawYPosition = wallImage.getWidth() * j;
+                char drawType = map.getFromPosition(i, j);
+                BufferedImage tempImage;
+                if (drawType == '#')
+                    tempImage = wallImage;
+                else
+                    tempImage = floorImage;
+                g.drawImage(tempImage, drawXPosition, drawYPosition, null);
+
+                if(drawType != '#' && drawType != ' ') {
+                    if (drawType == 't')
+                        g.drawImage(treasureImage, drawXPosition, drawYPosition, null);
+                    else {
+                        int warriorNumber = Character.getNumericValue(drawType);
+                        g.setColor(myAgent.getRegisteredWarriors().get(warriorNumber).getColor());
+                        g.fillOval(drawXPosition, drawYPosition, 25, 25);
+                    }
+                }
+            }
+        }
+    }
+
 
     public void updateMap()
     {
@@ -139,5 +147,12 @@ class MapGui extends JFrame {
         g.drawImage(image, 0, 0, null);
         g.dispose();
         return newImage;
+    }
+
+    public void drawText(String text)
+    {
+        paintText = true;
+        textToPrint = text;
+        updateMap();
     }
 }

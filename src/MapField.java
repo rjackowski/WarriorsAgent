@@ -50,8 +50,10 @@ public class MapField {
                 break;
         }
 
-        if(map[newPos.getX()][newPos.getY()] == 't')
+        if(map[newPos.getX()][newPos.getY()] == 't') {
             treasureCollected = true;
+            treasuresLeft--;
+        }
 
         setMapField(newPos,Character.forDigit(warrior, 10));
         setMapField(pos,' ');
@@ -83,26 +85,6 @@ public class MapField {
 
             br = new BufferedReader(new FileReader("Resources/mapa.txt"));
             line = br.readLine();
-
-//            int tempLine = 0;
-//            while (line != null) {
-//                int numberOfInputedChars = 0;
-//                for (int i = 1; i < line.length(); i += 2) {
-//                    char inputChar = line.charAt(i);
-//                    if (inputChar == ' ' || inputChar == '#') {
-//                        map[tempLine][numberOfInputedChars] = inputChar;
-//                    } else {
-//                        map[tempLine][numberOfInputedChars] = ' ';
-//                        if (inputChar == 't')
-//                            possibleTreasuresPos.add(new Position(tempLine, numberOfInputedChars));
-//                        else
-//                            possibleWarriorsPos.add(new Position(tempLine, numberOfInputedChars));
-//                    }
-//                    numberOfInputedChars++;
-//                }
-//                line = br.readLine();
-//                tempLine++;
-//            }
 
             int tempLine = 0;
             while (line != null) {
@@ -188,6 +170,14 @@ public class MapField {
         infPackage.setDownVisible(getFields(warriorPosition, 0, -1));
         return infPackage;
     }
+
+    public boolean allTreasuresCollected()
+    {
+        if(treasuresLeft == 0)
+            return true;
+        return false;
+    }
+
 
     public char getFromPosition(Position p) {
         return getFromPosition(p.getX(), p.getY());
