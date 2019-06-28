@@ -32,7 +32,7 @@ public class MapAgent extends Agent {
     private boolean startFlag = false;
     private boolean waitForAllWarriors = false;
 
-    private int gameStep = 0;
+    private GameSteps gameStep = GameSteps.SEND_MOVES;
     private int warriorsMoved = 0;
     private MapField map;
 
@@ -88,7 +88,7 @@ public class MapAgent extends Agent {
                 switch (gameStep) {
 
                     //Wysłanie informacji o możliwych ruchach
-                    case 0: {
+                    case SEND_MOVES: {
                         for (WarriorsDetails warrior : registeredWarriors) {
                             ACLMessage msg = new ACLMessage(ActionCode.POSITION);
                             InformationPackage infPack = new InformationPackage();
@@ -108,11 +108,11 @@ public class MapAgent extends Agent {
                             myAgent.send(msg);
                             System.out.println("Wysłano mozliwe ruchy ");
                         }
-                        gameStep++;
+                        gameStep = GameSteps.RECEIVE_MOVES;
                     }
                     break;
                     //Odbieranie informacji o wykonanych ruchach
-                    case 1:
+                    case RECEIVE_MOVES:
                         MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.DECISION);
                         ACLMessage msg = myAgent.receive(mt);
                         DecisionPackage decPack = new DecisionPackage();
@@ -134,12 +134,12 @@ public class MapAgent extends Agent {
                         if (warriorsMoved == registeredWarriors.size()) {
 
                             warriorsMoved = 0;
-                            gameStep++;
+                            gameStep=GameSteps.MAKE_MOVES;
 
                         }
                         break;
                     //Wykonanie ruchów
-                    case 2:
+                    case MAKE_MOVES:
 
                         for (int i = 0; i < registeredWarriors.size(); i++) {
                             DecisionPackage decPackage = registeredWarriors.get(i).getDecPack();
@@ -201,11 +201,11 @@ public class MapAgent extends Agent {
 
 
                         resetWarriorsFlag();
-                        gameStep++;
+                        gameStep = GameSteps.RECEIVE_DEAD;
 
                         break;
                     //Odebranie info o umierającyc
-                    case 3:
+                    case RECEIVE_DEAD:
                          mt = MessageTemplate.MatchPerformative(ActionCode.LIVESTATE);
                          msg = myAgent.receive(mt);
                         if (msg != null) {
@@ -224,7 +224,7 @@ public class MapAgent extends Agent {
                         if (warriorsMoved == registeredWarriors.size()) {
                             resetWarriorsFlag();
                             warriorsMoved = 0;
-                            gameStep=0;
+                            gameStep=GameSteps.SEND_MOVES;
 
                         }
 
@@ -252,39 +252,46 @@ public class MapAgent extends Agent {
         }
     }
 
-        private class GetRegistration extends CyclicBehaviour {
+    private class GetRegistration extends CyclicBehaviour {
 
-            public void action() {
-                MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.REGISTER);
-                ACLMessage msg = myAgent.receive(mt);
-                if (msg != null) {
-                    ACLMessage reply = msg.createReply();
+        public void action() {
+            MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.REGISTER);
+            ACLMessage msg = myAgent.receive(mt);
+            if (msg != null) {
+                ACLMessage reply = msg.createReply();
 
-                    if (registeredWarriors.size() < MAX_WARRIORS) {
+                if (registeredWarriors.size() < MAX_WARRIORS) {
 
-                        AID senderAID = msg.getSender();
-                        Color setColor = avilibleColors.get(registeredWarriors.size());
-                        //  warriorColors.add(setColor);
-                        WarriorsDetails warrior = new WarriorsDetails(msg.getSender(), setColor);
-                        reply.setContent(Integer.toString(setColor.getRGB()));
-                        reply.setPerformative(ActionCode.REGISTER_ACCEPT);
+                    AID senderAID = msg.getSender();
+                    Color setColor = avilibleColors.get(registeredWarriors.size());
+                    //  warriorColors.add(setColor);
+                    WarriorsDetails warrior = new WarriorsDetails(msg.getSender(), setColor);
+                    reply.setContent(Integer.toString(setColor.getRGB()));
+                    reply.setPerformative(ActionCode.REGISTER_ACCEPT);
 
-                        //setting GUI
-                        registeredWarriors.add(warrior);
-                        prepGui.setWarriorsNumber(registeredWarriors.size());
+                    //setting GUI
+                    registeredWarriors.add(warrior);
+                    prepGui.setWarriorsNumber(registeredWarriors.size());
 
-                        System.out.println("Zarejestrowano wojownika " + senderAID);
-                    } else {
-                        reply.setPerformative(ActionCode.REGISTER_DENY);
-                        System.out.println("Odrzucono rejestracje " + msg.getSender());
-                    }
-
-                    myAgent.send(reply);
-                    System.out.println(msg);
+                    System.out.println("Zarejestrowano wojownika " + senderAID);
                 } else {
-                    block();
+                    reply.setPerformative(ActionCode.REGISTER_DENY);
+                    System.out.println("Odrzucono rejestracje " + msg.getSender());
                 }
-            }
 
+                myAgent.send(reply);
+                System.out.println(msg);
+            } else {
+                block();
+            }
         }
+
     }
+
+    private enum GameSteps {
+        SEND_MOVES,
+        RECEIVE_MOVES,
+        MAKE_MOVES,
+        RECEIVE_DEAD
+    }
+}
