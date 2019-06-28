@@ -89,6 +89,7 @@ public class MapAgent extends Agent {
     }
 
     private class ManageAction extends CyclicBehaviour {
+
         public void action() {
             if (startFlag) {
                 switch (gameStep) {
@@ -117,8 +118,12 @@ public class MapAgent extends Agent {
                         handleDraw();
                         break;
 
-                    case ALL_TREASURES_COLLECTED:
-                        handleAllTreasuresCollected();
+                    case TREASURE_NO_REQUEST:
+                        handleTreasureNumerRequest();
+                        break;
+
+                    case RECEIVE_TREASURE_NO:
+                        handleReceiveTreasure();
                 }
             }
         }
@@ -265,7 +270,7 @@ public class MapAgent extends Agent {
                 }
                 else if(map.allTreasuresCollected())
                 {
-                    gameStep = GameSteps.ALL_TREASURES_COLLECTED;
+                    gameStep = GameSteps.RECEIVE_TREASURE_NO;
                 }
                 else {
                     resetWarriorsFlag();
@@ -281,13 +286,18 @@ public class MapAgent extends Agent {
             if(registeredWarriors.size() == 1) {
                 String warriorName = registeredWarriors.get(0).getAid().toString();
                 sendInformationAboutEnd(registeredWarriors.get(0));
-                mapGui.drawText(WINNER_TEXT + warriorName + "!");
-                removeBehaviour(gameBehaviour);
+                showWinner(warriorName);
             }
             else if(registeredWarriors.size() == 0)
                 gameStep = GameSteps.NO_WARRIOR_LEFT;
             else
                 gameStep = GameSteps.SEND_MOVES;
+        }
+
+        private void showWinner(String warriorName)
+        {
+            mapGui.drawText(WINNER_TEXT + warriorName + "!");
+            removeBehaviour(gameBehaviour);
         }
 
         private void handleDraw()
@@ -296,10 +306,64 @@ public class MapAgent extends Agent {
             removeBehaviour(gameBehaviour);
         }
 
-        private void handleAllTreasuresCollected()
+        private void handleTreasureNumerRequest()
         {
-
+            for (WarriorsDetails warrior : registeredWarriors) {
+                ACLMessage msg = new ACLMessage(ActionCode.TREASURE_NO_REQUEST);
+                msg.addReceiver(warrior.getAid());
+                myAgent.send(msg);
+            }
+            gameStep = GameSteps.RECEIVE_TREASURE_NO;
         }
+
+        private void handleReceiveTreasure()
+        {
+            MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.TREASURE_NO_INFO);
+            ACLMessage msg = myAgent.receive(mt);
+            if (msg != null) {
+                AID senderAID = msg.getSender();
+                int index = getListIndexByAID(senderAID);
+                if (index != -1 && !registeredWarriors.get(index).isDecisionFlag()) {
+                    try {
+                        int treasures = Integer.valueOf(msg.getContent());
+                        registeredWarriors.get(index).setTreasureCollected(treasures);
+                        registeredWarriors.get(index).setTreasureNoSentFlag(true);
+                    }
+                    catch (Exception e) {
+                        System.out.println(e);
+                    }
+                }
+            }
+
+            if(registeredWarriors.size() == treasureInfoReceived())
+            {
+                String bestWarrior = getBestWarrior().getAid().toString();
+                showWinner(bestWarrior);
+            }
+        }
+
+        private WarriorsDetails getBestWarrior()
+        {
+            int maxTreasures = -1;
+            WarriorsDetails bestWarrior = registeredWarriors.get(0);
+            for(WarriorsDetails warrior: registeredWarriors)
+                if(warrior.getTreasureCollected() > maxTreasures) {
+                    bestWarrior = warrior;
+                    maxTreasures = warrior.getTreasureCollected();
+                }
+            return bestWarrior;
+        }
+
+
+        private int treasureInfoReceived()
+        {
+            int count = 0;
+            for(WarriorsDetails warrior: registeredWarriors)
+                if(warrior.getTreasureNoSentFlag())
+                    count++;
+            return count;
+        }
+
 
         private void sendInformationAboutEnd(WarriorsDetails warrior)
         {
@@ -366,7 +430,8 @@ public class MapAgent extends Agent {
         RECEIVE_MOVES,
         MAKE_MOVES,
         RECEIVE_DEAD,
-        ALL_TREASURES_COLLECTED,
+        TREASURE_NO_REQUEST,
+        RECEIVE_TREASURE_NO,
         ONE_WARRIOR_LEFT,
         NO_WARRIOR_LEFT
     }

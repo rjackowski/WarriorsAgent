@@ -91,7 +91,7 @@ class WarriorAgentStateGui extends JFrame {
     public void showParamaters() {
         liveField.setText( Integer.toString(myAgent.getLive()));
      //   System.out.println("I am here: ");
-        coinField.setText(Integer.toString(myAgent.getCoinAmount()));
+        coinField.setText(Integer.toString(myAgent.getTreasureAmount()));
     }
 
     public void showGui() {
