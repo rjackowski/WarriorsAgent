@@ -17,6 +17,9 @@ import java.util.List;
 
 public class MapAgent extends Agent {
 
+    private static final String DRAW_TEXT = "No winner! All warriors are dead!";
+    private static final String WINNER_TEXT = "The winer is ";
+
     private MapPrepGui prepGui;
     private MapGui mapGui;
 
@@ -35,6 +38,8 @@ public class MapAgent extends Agent {
     private GameSteps gameStep = GameSteps.SEND_MOVES;
     private int warriorsMoved = 0;
     private MapField map;
+
+    private ManageAction gameBehaviour;
 
     public List<WarriorsDetails> getRegisteredWarriors() {
         return registeredWarriors;
@@ -64,7 +69,8 @@ public class MapAgent extends Agent {
 
         System.out.println("Map registred");
         addBehaviour(new GetRegistration());
-        addBehaviour(new ManageAction());
+        gameBehaviour = new ManageAction();
+        addBehaviour(gameBehaviour);
     }
 
     private void SetupColors() {
@@ -87,152 +93,219 @@ public class MapAgent extends Agent {
             if (startFlag) {
                 switch (gameStep) {
 
-                    //Wysłanie informacji o możliwych ruchach
-                    case SEND_MOVES: {
-                        for (WarriorsDetails warrior : registeredWarriors) {
-                            ACLMessage msg = new ACLMessage(ActionCode.POSITION);
-                            InformationPackage infPack = new InformationPackage();
-                            Vector<Character> visible = new Vector<Character>();
-                            int index = registeredWarriors.indexOf(warrior);
-                            infPack = map.getVisibleFields(index);
-                            msg.addReceiver(warrior.getAid());
-
-                            try {
-                                msg.setContentObject(infPack);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-
-                            msg.setConversationId("move_send");
-                            msg.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
-                            myAgent.send(msg);
-                            System.out.println("Wysłano mozliwe ruchy ");
-                        }
-                        gameStep = GameSteps.RECEIVE_MOVES;
-                    }
+                    case SEND_MOVES:
+                        handleSendMoves();
                     break;
-                    //Odbieranie informacji o wykonanych ruchach
+
                     case RECEIVE_MOVES:
-                        MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.DECISION);
-                        ACLMessage msg = myAgent.receive(mt);
-                        DecisionPackage decPack = new DecisionPackage();
-                        if (msg != null) {
-                            AID senderAID = msg.getSender();
-                            try {
-                                decPack = (DecisionPackage) msg.getContentObject();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                            int index = getListIndexByAID(senderAID);
-                            if (index != -1 && !registeredWarriors.get(index).isDecisionFlag()) {
-                                registeredWarriors.get(index).setDecisionFlag(true);
-                                registeredWarriors.get(index).setDecPack(decPack);
-                                warriorsMoved++;
-                            }
-                        }
-
-                        if (warriorsMoved == registeredWarriors.size()) {
-
-                            warriorsMoved = 0;
-                            gameStep=GameSteps.MAKE_MOVES;
-
-                        }
+                        handleReceiveMoves();
                         break;
-                    //Wykonanie ruchów
+
                     case MAKE_MOVES:
-
-                        for (int i = 0; i < registeredWarriors.size(); i++) {
-                            DecisionPackage decPackage = registeredWarriors.get(i).getDecPack();
-                            if (decPackage.getType() == 'M') {
-                                mapGui.changeWariorLocation(i, decPackage.getDirection());
-                            }
-                            ACLMessage msgAttack = new ACLMessage(ActionCode.ATTACK);
-                            msgAttack.addReceiver(registeredWarriors.get(i).getAid());
-                            DecisionPackage attackPack = new DecisionPackage('A', i, 15);
-                            try {
-                                msgAttack.setContentObject(attackPack);
-                                myAgent.send(msgAttack);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-
-                        Vector<WarriorsDetails> warriorsCollectedTreasure = new Vector<WarriorsDetails>();
-                        for(int i = 0 ; i < registeredWarriors.size(); i++) {
-                            DecisionPackage decPackage = registeredWarriors.get(i).getDecPack();
-                            if (decPackage.getType() == 'M') {
-                                System.out.println("Wykonać ruch dla: " + i );
-                                if(map.changeWariorLocation(i,'T'))
-                                    warriorsCollectedTreasure.add(registeredWarriors.get(i));
-
-                                System.out.println("Wykonać ruch");
-
-                            }
-                        }
-
-                        for(WarriorsDetails warrior : warriorsCollectedTreasure) {
-                            ACLMessage m = new ACLMessage(ActionCode.TREASURE_PICKED);
-                            Treasure treasure = new Treasure();
-                            Vector<Character> visible = new Vector<Character>();
-                            int index = registeredWarriors.indexOf(warrior);
-                            m.addReceiver(warrior.getAid());
-
-                            try {
-                                m.setContentObject(treasure);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-
-                            m.setConversationId("treasure_picked");
-                            myAgent.send(m);
-                            System.out.println("Wyslano zebranie skarbu");
-                        }
-                        try{
-                            Thread.sleep(2000);}
-                        catch(Exception ex){ex.printStackTrace();}
-                        resetWarriorsFlag();
-                    
-                        mapGui.updateMap();
-                        try {
-                            Thread.sleep(2000);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
-
-
-                        resetWarriorsFlag();
-                        gameStep = GameSteps.RECEIVE_DEAD;
-
+                        handleMakeMoves();
                         break;
-                    //Odebranie info o umierającyc
+
                     case RECEIVE_DEAD:
-                         mt = MessageTemplate.MatchPerformative(ActionCode.LIVESTATE);
-                         msg = myAgent.receive(mt);
-                        if (msg != null) {
-                            AID senderAID = msg.getSender();
-                            String result = msg.getContent();
-
-                            int index = getListIndexByAID(senderAID);
-
-                            if (result == "DEAD")
-                                registeredWarriors.get(index).setDeadFlag(true);
-                            if (index != -1 && !registeredWarriors.get(index).isDecisionFlag()) {
-                                registeredWarriors.get(index).setDecisionFlag(true);
-                                warriorsMoved++;
-                            }
-                        }
-                        if (warriorsMoved == registeredWarriors.size()) {
-                            resetWarriorsFlag();
-                            warriorsMoved = 0;
-                            gameStep=GameSteps.SEND_MOVES;
-
-                        }
-
+                        handleReceiveDead();
                         break;
 
+                    case ONE_WARRIOR_LEFT:
+                        handleWinner();
+                        break;
 
+                    case NO_WARRIOR_LEFT:
+                        handleDraw();
+                        break;
+
+                    case ALL_TREASURES_COLLECTED:
+                        handleAllTreasuresCollected();
                 }
             }
+        }
+
+        private void handleSendMoves()
+        {
+            for (WarriorsDetails warrior : registeredWarriors) {
+                ACLMessage msg = new ACLMessage(ActionCode.POSITION);
+                InformationPackage infPack = new InformationPackage();
+                Vector<Character> visible = new Vector<Character>();
+                int index = registeredWarriors.indexOf(warrior);
+                infPack = map.getVisibleFields(index);
+                msg.addReceiver(warrior.getAid());
+
+                try {
+                    msg.setContentObject(infPack);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                msg.setConversationId("move_send");
+                msg.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+                myAgent.send(msg);
+                System.out.println("Wysłano mozliwe ruchy ");
+            }
+            gameStep = GameSteps.RECEIVE_MOVES;
+        }
+
+        private void handleReceiveMoves()
+        {
+            MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.DECISION);
+            ACLMessage msg = myAgent.receive(mt);
+            DecisionPackage decPack = new DecisionPackage();
+            if (msg != null) {
+                AID senderAID = msg.getSender();
+                try {
+                    decPack = (DecisionPackage) msg.getContentObject();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                int index = getListIndexByAID(senderAID);
+                if (index != -1 && !registeredWarriors.get(index).isDecisionFlag()) {
+                    registeredWarriors.get(index).setDecisionFlag(true);
+                    registeredWarriors.get(index).setDecPack(decPack);
+                    warriorsMoved++;
+                }
+            }
+
+            if (warriorsMoved == registeredWarriors.size()) {
+                warriorsMoved = 0;
+                gameStep=GameSteps.MAKE_MOVES;
+            }
+        }
+
+        private void handleMakeMoves()
+        {
+            for (int i = 0; i < registeredWarriors.size(); i++) {
+                DecisionPackage decPackage = registeredWarriors.get(i).getDecPack();
+                if (decPackage.getType() == 'M') {
+                    mapGui.changeWariorLocation(i, decPackage.getDirection());
+                }
+                ACLMessage msgAttack = new ACLMessage(ActionCode.ATTACK);
+                msgAttack.addReceiver(registeredWarriors.get(i).getAid());
+                DecisionPackage attackPack = new DecisionPackage('A', i, 15);
+                try {
+                    msgAttack.setContentObject(attackPack);
+                    myAgent.send(msgAttack);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            Vector<WarriorsDetails> warriorsCollectedTreasure = new Vector<WarriorsDetails>();
+            for(int i = 0 ; i < registeredWarriors.size(); i++) {
+                DecisionPackage decPackage = registeredWarriors.get(i).getDecPack();
+                if (decPackage.getType() == 'M') {
+                    if(map.changeWariorLocation(i,'T'))
+                        warriorsCollectedTreasure.add(registeredWarriors.get(i));
+                }
+            }
+
+            for(WarriorsDetails warrior : warriorsCollectedTreasure) {
+                ACLMessage m = new ACLMessage(ActionCode.TREASURE_PICKED);
+                Treasure treasure = new Treasure();
+                Vector<Character> visible = new Vector<Character>();
+                int index = registeredWarriors.indexOf(warrior);
+                m.addReceiver(warrior.getAid());
+
+                try {
+                    m.setContentObject(treasure);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+                m.setConversationId("treasure_picked");
+                myAgent.send(m);
+                System.out.println("Wyslano zebranie skarbu");
+            }
+            try{
+                Thread.sleep(2000);}
+            catch(Exception ex){ex.printStackTrace();}
+            resetWarriorsFlag();
+
+            mapGui.updateMap();
+            try {
+                Thread.sleep(2000);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+
+            resetWarriorsFlag();
+            gameStep = GameSteps.RECEIVE_DEAD;
+
+        }
+
+        private void handleReceiveDead()
+        {
+            MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.LIVESTATE);
+            ACLMessage msg = myAgent.receive(mt);
+            if (msg != null) {
+                AID senderAID = msg.getSender();
+                String result = msg.getContent();
+
+                int index = getListIndexByAID(senderAID);
+
+                if (result == "DEAD")
+                {
+                    registeredWarriors.remove(index);
+                }
+                if (index != -1 && !registeredWarriors.get(index).isDecisionFlag()) {
+                    registeredWarriors.get(index).setDecisionFlag(true);
+                    warriorsMoved++;
+                }
+            }
+            if (warriorsMoved == registeredWarriors.size()) {
+                if(registeredWarriors.size() == 1)
+                {
+                    gameStep = GameSteps.ONE_WARRIOR_LEFT;
+                }
+                else if(registeredWarriors.size() == 0)
+                {
+                    gameStep = GameSteps.NO_WARRIOR_LEFT;
+                }
+                else if(map.allTreasuresCollected())
+                {
+                    gameStep = GameSteps.ALL_TREASURES_COLLECTED;
+                }
+                else {
+                    resetWarriorsFlag();
+                    warriorsMoved = 0;
+                    gameStep = GameSteps.SEND_MOVES;
+                }
+
+            }
+        }
+
+        private void handleWinner()
+        {
+            if(registeredWarriors.size() == 1) {
+                String warriorName = registeredWarriors.get(0).getAid().toString();
+                sendInformationAboutEnd(registeredWarriors.get(0));
+                mapGui.drawText(WINNER_TEXT + warriorName + "!");
+                removeBehaviour(gameBehaviour);
+            }
+            else if(registeredWarriors.size() == 0)
+                gameStep = GameSteps.NO_WARRIOR_LEFT;
+            else
+                gameStep = GameSteps.SEND_MOVES;
+        }
+
+        private void handleDraw()
+        {
+            mapGui.drawText(DRAW_TEXT);
+            removeBehaviour(gameBehaviour);
+        }
+
+        private void handleAllTreasuresCollected()
+        {
+
+        }
+
+        private void sendInformationAboutEnd(WarriorsDetails warrior)
+        {
+            ACLMessage msg = new ACLMessage(ActionCode.END);
+            msg.addReceiver(warrior.getAid());
+            myAgent.send(msg);
         }
 
         private void resetWarriorsFlag() {
@@ -292,6 +365,9 @@ public class MapAgent extends Agent {
         SEND_MOVES,
         RECEIVE_MOVES,
         MAKE_MOVES,
-        RECEIVE_DEAD
+        RECEIVE_DEAD,
+        ALL_TREASURES_COLLECTED,
+        ONE_WARRIOR_LEFT,
+        NO_WARRIOR_LEFT
     }
 }
