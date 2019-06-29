@@ -46,7 +46,7 @@ public class MapAgent extends Agent {
     }
 
     protected void setup() {
-        System.out.println("Map created");
+       // System.out.println("Map created");
 
         SetupColors();
         prepGui = new MapPrepGui(this);
@@ -180,10 +180,13 @@ public class MapAgent extends Agent {
 
         private void handleMakeMoves()
         {
+
+            Vector<WarriorsDetails> warriorsCollectedTreasure = new Vector<WarriorsDetails>();
             for (int i = 0; i < registeredWarriors.size(); i++) {
                 DecisionPackage decPackage = registeredWarriors.get(i).getDecPack();
                 if (decPackage.getType() == 'M') {
-                    mapGui.changeWariorLocation(i, decPackage.getDirection());
+                    if(map.changeWariorLocation(i, decPackage.getDirection()))
+                    warriorsCollectedTreasure.add(registeredWarriors.get(i));
                 }
                 ACLMessage msgAttack = new ACLMessage(ActionCode.ATTACK);
                 msgAttack.addReceiver(registeredWarriors.get(i).getAid());
@@ -196,14 +199,6 @@ public class MapAgent extends Agent {
                 }
             }
 
-            Vector<WarriorsDetails> warriorsCollectedTreasure = new Vector<WarriorsDetails>();
-            for(int i = 0 ; i < registeredWarriors.size(); i++) {
-                DecisionPackage decPackage = registeredWarriors.get(i).getDecPack();
-                if (decPackage.getType() == 'M') {
-                    if(map.changeWariorLocation(i,'T'))
-                        warriorsCollectedTreasure.add(registeredWarriors.get(i));
-                }
-            }
 
             for(WarriorsDetails warrior : warriorsCollectedTreasure) {
                 ACLMessage m = new ACLMessage(ActionCode.TREASURE_PICKED);
@@ -222,14 +217,10 @@ public class MapAgent extends Agent {
                 myAgent.send(m);
                 System.out.println("Wyslano zebranie skarbu");
             }
-            try{
-                Thread.sleep(2000);}
-            catch(Exception ex){ex.printStackTrace();}
-            resetWarriorsFlag();
 
             mapGui.updateMap();
             try {
-                Thread.sleep(2000);
+                Thread.sleep(50);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -379,8 +370,6 @@ public class MapAgent extends Agent {
 
         public int getListIndexByAID(AID aid) {
             for (int i = 0; i < getRegisteredWarriors().size(); i++) {
-                System.out.println("1:" + aid);
-                System.out.println("2:" + getRegisteredWarriors().get(i).getAid());
                 if (getRegisteredWarriors().get(i).getAid().equals(aid)) {
                     return i;
                 }
@@ -410,14 +399,14 @@ public class MapAgent extends Agent {
                     registeredWarriors.add(warrior);
                     prepGui.setWarriorsNumber(registeredWarriors.size());
 
-                    System.out.println("Zarejestrowano wojownika " + senderAID);
+                  //  System.out.println("Zarejestrowano wojownika " + senderAID);
                 } else {
                     reply.setPerformative(ActionCode.REGISTER_DENY);
-                    System.out.println("Odrzucono rejestracje " + msg.getSender());
+                  //  System.out.println("Odrzucono rejestracje " + msg.getSender());
                 }
 
                 myAgent.send(reply);
-                System.out.println(msg);
+               // System.out.println(msg);
             } else {
                 block();
             }
