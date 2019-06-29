@@ -26,8 +26,8 @@ public class WarriorAgent extends Agent {
     private int strength;
    // private
 
-    public int getCoinAmount() {
-        return coinAmount;
+    public int getTreasureAmount() {
+        return treasureAmount;
     }
 
     private int coinAmount;
@@ -37,6 +37,7 @@ public class WarriorAgent extends Agent {
     private AID myMapAgent;
     private RegisterOnMap reg;
     private char lastDecision;
+    private int treasureAmount;
 
     public Color getColor() {
         return color;
@@ -49,8 +50,9 @@ public class WarriorAgent extends Agent {
 
 
     protected void setup() {
-
-        coinAmount = 0;
+      
+        System.out.println("Warrior created");
+        treasureAmount = 0;
         myGui = new WarriorAgentGui(this);
         myStateGui = new WarriorAgentStateGui(this);
         myGui.showGui();
@@ -109,58 +111,106 @@ public class WarriorAgent extends Agent {
                     myAgent.addBehaviour(reg);
                 // Wojownik znajduje się na mapie
                 else {
-                    //pobranie możliwych ruchów
-                    boolean messageReceived = false;
-                    MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.POSITION);
-                    ACLMessage msg = myAgent.receive(mt);
-                    if (msg != null) {
-                        messageReceived = true;
-                        try {
-                            infoPack = (InformationPackage) msg.getContentObject();
-                            addBehaviour(new MakeMoveDecision(infoPack));
-                        } catch(Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-
-                    //receive info about picked treasure
-                    mt = MessageTemplate.MatchPerformative(ActionCode.TREASURE_PICKED);
-                    msg = myAgent.receive(mt);
-                    if(msg != null) {
-                        messageReceived = true;
-                        try {
-                            Treasure treasure = (Treasure) msg.getContentObject();
-                            live += treasure.getAddHp();
-                            strength += treasure.getAddStrength();
-                            coinAmount++;
-                            myStateGui.refreshGui();
-                        } catch (UnreadableException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    //receive atack info
-                     mt = MessageTemplate.MatchPerformative(ActionCode.ATTACK);
-                     msg = myAgent.receive(mt);
-                    if (msg != null) {
-                        messageReceived = true;
-                        try {
-                            DecisionPackage decisionPackage  = (DecisionPackage) msg.getContentObject();
-                            addBehaviour(new SubstrLive(decisionPackage));
-                        } catch(Exception ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-
-                    if(!messageReceived)
-                        block();
+                    receivePossibleMoves();
+                    handleReceivedTreasure();
+                    handleReceiveAttack();
+                    handleEnd();
+                    handleTreasureNoRequest();
 
                     myStateGui.refreshGui();
                 }
             }
         }
-    }
 
+        private void receivePossibleMoves()
+        {
+            MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.POSITION);
+            ACLMessage msg = myAgent.receive(mt);
+            if (msg != null) {
+                try {
+                    infoPack = (InformationPackage) msg.getContentObject();
+                    addBehaviour(new MakeMoveDecision(infoPack));
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            else
+            {
+                block();
+            }
+        }
+
+        private void handleReceivedTreasure()
+        {
+            MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.TREASURE_PICKED);
+            ACLMessage msg = myAgent.receive(mt);
+            if(msg != null) {
+                try {
+                    Treasure treasure = (Treasure) msg.getContentObject();
+                    live += treasure.getAddHp();
+                    strength += treasure.getAddStrength();
+                    treasureAmount++;
+                    myStateGui.refreshGui();
+                } catch (UnreadableException e) {
+                    e.printStackTrace();
+                }
+            }
+            else
+            {
+                block();
+            }
+
+        }
+
+        private void handleReceiveAttack()
+        {
+            MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.ATTACK);
+            ACLMessage msg = myAgent.receive(mt);
+            if (msg != null) {
+                try {
+                    DecisionPackage decisionPackage  = (DecisionPackage) msg.getContentObject();
+                    addBehaviour(new SubstrLive(decisionPackage));
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+            else {
+                block();
+            }
+        }
+
+        private void handleEnd()
+        {
+            MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.END);
+            ACLMessage msg = myAgent.receive(mt);
+            if (msg != null) {
+                doDelete();
+            }
+            else {
+                block();
+            }
+        }
+
+        private void handleTreasureNoRequest()
+        {
+            MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.TREASURE_NO_REQUEST);
+            ACLMessage msg = myAgent.receive(mt);
+            if (msg != null) {
+                ACLMessage reply = new ACLMessage(ActionCode.TREASURE_NO_INFO);
+                reply.addReceiver(myMapAgent);
+                try{
+                    reply.setContent(String.valueOf(treasureAmount));
+                }
+                catch(Exception ex) {ex.printStackTrace();}
+
+                myAgent.send(reply);
+            }
+            else {
+                block();
+            }
+        }
+
+    }
 
     private class MakeMoveDecision extends OneShotBehaviour {
         InformationPackage infPack;

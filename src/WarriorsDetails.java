@@ -35,11 +35,27 @@ public class WarriorsDetails {
     private boolean deadFlag;
     private boolean decisionFlag;
     private DecisionPackage decPack;
+    private boolean treasureNoSentFlag;
+    private int treasureCollected = 0;
 
+    public void setTreasureNoSentFlag(boolean treasureNoSentFlag) {
+        this.treasureNoSentFlag = treasureNoSentFlag;
+    }
 
+    public boolean getTreasureNoSentFlag()
+    {
+        return treasureNoSentFlag;
+    }
 
+    public void setTreasureCollected(int treasureCollected)
+    {
+        this.treasureCollected = treasureCollected;
+    }
 
-
+    public int getTreasureCollected()
+    {
+        return treasureCollected;
+    }
 
 
     public Color getColor() {
