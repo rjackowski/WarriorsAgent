@@ -233,102 +233,104 @@ public class WarriorAgent extends Agent {
 
         }
 
+
+        public char  containsWarrior(char field) {
+            for (Character warrior: warriorsList) {
+                if (warrior == field )
+                    return warrior;
+            }
+
+            return 'F';
+        }
         public void action() {
-            char decision = ' ';
-            float maxPoint = -10000000 ;
-            decisionList = new Vector<Character>();
+
            // temp = findPosition('s',infPack.getBottomVisible());
             if (infPack.getLeftVisible().size() == 1) leftBlocked = true;
             if (infPack.getRightVisible().size() == 1) rightBlocked = true;
             if (infPack.getDownVisible().size() == 1) downBlocked = true;
             if (infPack.getTopVisible().size() == 1) topBlocked = true;
 
-            //Szukanie skarbu i przeciwnika
+            //Sprawdzenie czy na polu oboo nie ma wojownika
+            char targetWarrior =  containsWarrior(infPack.getLeftVisible().firstElement());
+            if (targetWarrior == 'F')
+                targetWarrior =  containsWarrior(infPack.getRightVisible().firstElement());
+            if (targetWarrior == 'F')
+                targetWarrior =  containsWarrior(infPack.getDownVisible().firstElement());
+            if (targetWarrior == 'F')
+                targetWarrior =  containsWarrior(infPack.getTopVisible().firstElement());
+
+            if(targetWarrior != 'F')
+                System.out.println(targetWarrior);
+
+            //Jeśli nie ma wojownika obok, podjęcie decyzji gdzie iść
+            if (targetWarrior == 'F')
+            moveDecision();
+            else
+                sendAttack(targetWarrior);
+        }
+
+        public void moveDecision() {
+            char decision = ' ';
+            float maxPoint = -10000000 ;
+            decisionList = new Vector<Character>();
+
+
             if  (lastDecision == 'R')
                 pointForLeft = - 10000;
             else
-            pointForLeft += countProfit(infPack.getLeftVisible());
+                pointForLeft += countProfit(infPack.getLeftVisible());
 
             if(lastDecision == 'L')
                 pointForRight = - 10000;
-                else
-            pointForRight += countProfit(infPack.getRightVisible());
+            else
+                pointForRight += countProfit(infPack.getRightVisible());
 
             if( lastDecision == 'T')
                 pointForDown = - 10000;
             else
-            pointForDown += countProfit(infPack.getDownVisible());
+                pointForDown += countProfit(infPack.getDownVisible());
 
             if( lastDecision == 'D')
                 pointForTop = - 10000;
             else
-             pointForTop += countProfit(infPack.getTopVisible());
+                pointForTop += countProfit(infPack.getTopVisible());
 
             if(!leftBlocked) {
-            decision = 'L';
-            decisionList.add(decision);
-            maxPoint = pointForLeft;}
+                decision = 'L';
+                decisionList.add(decision);
+                maxPoint = pointForLeft;}
 
             if(!rightBlocked) {
-            if (pointForRight >= maxPoint) {
-                if (pointForRight > maxPoint)
-                    decisionList.clear();
-                maxPoint = pointForRight;
-                decision = 'R';
-                decisionList.add(decision);
+                if (pointForRight >= maxPoint) {
+                    if (pointForRight > maxPoint)
+                        decisionList.clear();
+                    maxPoint = pointForRight;
+                    decision = 'R';
+                    decisionList.add(decision);
+                }
             }
-           }
             if(!downBlocked) {
-            if (pointForDown >= maxPoint) {
-                if (pointForDown > maxPoint)
-                    decisionList.clear();
-                maxPoint = pointForDown;
-                decision = 'D';
-                decisionList.add(decision);
-            }}
+                if (pointForDown >= maxPoint) {
+                    if (pointForDown > maxPoint)
+                        decisionList.clear();
+                    maxPoint = pointForDown;
+                    decision = 'D';
+                    decisionList.add(decision);
+                }}
             if(!topBlocked) {
-            if (pointForTop > maxPoint) {
-                if (pointForTop > maxPoint)
-                    decisionList.clear();
-                maxPoint = pointForTop;
-                decision = 'T';}
+                if (pointForTop > maxPoint) {
+                    if (pointForTop > maxPoint)
+                        decisionList.clear();
+                    maxPoint = pointForTop;
+                    decision = 'T';}
                 decisionList.add(decision);
             }
             Random generator = new Random();
             int index = generator.nextInt(decisionList.size());
-
-            sendDecision(decisionList.get(index));
-
+            lastDecision = decisionList.get(index);
+            sendMove(decisionList.get(index));
         }
 
-        public void sendDecision(char decision) {
-            Character position = ' ';
-            switch(decision) {
-                case 'L':
-                    position = infPack.getLeftVisible().firstElement();
-                    break;
-                case 'R':
-                    position = infPack.getRightVisible().firstElement();
-                    break;
-                case 'D':
-                    position = infPack.getDownVisible().firstElement();
-                    break;
-                case 'T':
-                    position = infPack.getTopVisible().firstElement();
-                    break;
-            }
-
-            if(warriorsList.contains(position)){
-                sendAttack(position);
-            }
-            else {
-                lastDecision = decision;
-//System.out.println(decision);
-                sendMove(decision);
-              //  sendMove('R');
-            }
-
-        }
 
         public void sendAttack(char target){
             DecisionPackage decPack = new DecisionPackage('A',target,strength);
@@ -374,12 +376,12 @@ public class WarriorAgent extends Agent {
 
             temp = findPosition('s',vectorToLook);
             if (temp != 0)
-                resultPositive =  12 - 2 * temp; //
+                resultPositive =  30 - 5 * temp; //
 
             for(Character ch: warriorsList) {
                 temp = findPosition(ch ,vectorToLook);
                 if(temp != 0)
-                    resultNegative +=  -12 - 2 * temp;
+                    resultNegative +=  100 - 2 * temp;
             }
             generalResult = resultPositive + resultNegative;
             return generalResult;

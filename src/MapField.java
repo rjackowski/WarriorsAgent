@@ -68,7 +68,7 @@ public class MapField {
 
         BufferedReader br = null;
         try {
-            br = new BufferedReader(new FileReader("Resources/mapa.txt"));
+            br = new BufferedReader(new FileReader("Resources/mapa2.txt"));
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
 

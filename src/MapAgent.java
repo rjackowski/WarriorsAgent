@@ -188,14 +188,16 @@ public class MapAgent extends Agent {
                     if(map.changeWariorLocation(i, decPackage.getDirection()))
                     warriorsCollectedTreasure.add(registeredWarriors.get(i));
                 }
+                if (decPackage.getType() == 'A') {
                 ACLMessage msgAttack = new ACLMessage(ActionCode.ATTACK);
                 msgAttack.addReceiver(registeredWarriors.get(i).getAid());
-                DecisionPackage attackPack = new DecisionPackage('A', i, 15);
+                DecisionPackage attackPack = new DecisionPackage('A', i, decPackage.getStrength());
                 try {
                     msgAttack.setContentObject(attackPack);
                     myAgent.send(msgAttack);
                 } catch (Exception ex) {
                     ex.printStackTrace();
+                }
                 }
             }
 
@@ -250,7 +252,7 @@ public class MapAgent extends Agent {
                     warriorsMoved++;
                 }
             }
-            if (warriorsMoved == registeredWarriors.size()) {
+           // if (warriorsMoved == registeredWarriors.size()) {
                 if(registeredWarriors.size() == 1)
                 {
                     gameStep = GameSteps.ONE_WARRIOR_LEFT;
@@ -269,7 +271,7 @@ public class MapAgent extends Agent {
                     gameStep = GameSteps.SEND_MOVES;
                 }
 
-            }
+
         }
 
         private void handleWinner()
