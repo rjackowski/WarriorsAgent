@@ -132,6 +132,7 @@ public class MapAgent extends Agent {
         private void handleSendMoves()
         {
             for (WarriorsDetails warrior : registeredWarriors) {
+                if (!warrior.isDeadFlag()){
                 ACLMessage msg = new ACLMessage(ActionCode.POSITION);
                 InformationPackage infPack = new InformationPackage();
                 Vector<Character> visible = new Vector<Character>();
@@ -147,7 +148,7 @@ public class MapAgent extends Agent {
 
                 msg.setConversationId("move_send");
                 msg.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
-                myAgent.send(msg);
+                myAgent.send(msg);}
                 //System.out.println("Wysłano mozliwe ruchy ");
             }
             gameStep = GameSteps.RECEIVE_MOVES;
@@ -172,8 +173,14 @@ public class MapAgent extends Agent {
                     warriorsMoved++;
                 }
             }
+            int warriorsNr = 0;
+            for (WarriorsDetails warrior : registeredWarriors) {
+                if(!warrior.isDeadFlag())
+                    warriorsNr++;
+            }
 
-            if (warriorsMoved == registeredWarriors.size()) {
+
+            if (warriorsMoved >= warriorsNr) {
                 warriorsMoved = 0;
                 gameStep=GameSteps.MAKE_MOVES;
             }
@@ -233,12 +240,6 @@ public class MapAgent extends Agent {
             gameStep = GameSteps.SEND_MOVES;
 
         }
-
-
-
-
-
-
 
 
         private void handleTreasureNumerRequest()
