@@ -67,10 +67,11 @@ public class MapAgent extends Agent {
             fe.printStackTrace();
         }
 
-        System.out.println("Map registred");
+      //  System.out.println("Map registred");
         addBehaviour(new GetRegistration());
         gameBehaviour = new ManageAction();
         addBehaviour(gameBehaviour);
+        addBehaviour( new ReceiveDead() );
     }
 
     private void SetupColors() {
@@ -106,24 +107,24 @@ public class MapAgent extends Agent {
                         handleMakeMoves();
                         break;
 
-                    case RECEIVE_DEAD:
-                        handleReceiveDead();
-                        break;
+//                    case RECEIVE_DEAD:
+//                    //    handleReceiveDead();
+//                        break;
 
-                    case ONE_WARRIOR_LEFT:
-                        handleWinner();
-                        break;
+//                    case ONE_WARRIOR_LEFT:
+//                       // handleWinner();
+//                        break;
 
-                    case NO_WARRIOR_LEFT:
-                        handleDraw();
-                        break;
+//                    case NO_WARRIOR_LEFT:
+//                        handleDraw();
+//                        break;
 
-                    case TREASURE_NO_REQUEST:
-                        handleTreasureNumerRequest();
-                        break;
-
-                    case RECEIVE_TREASURE_NO:
-                        handleReceiveTreasure();
+//                    case TREASURE_NO_REQUEST:
+//                        handleTreasureNumerRequest();
+//                        break;
+//
+//                    case RECEIVE_TREASURE_NO:
+                     //   handleReceiveTreasure();
                 }
             }
         }
@@ -147,7 +148,7 @@ public class MapAgent extends Agent {
                 msg.setConversationId("move_send");
                 msg.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
                 myAgent.send(msg);
-                System.out.println("Wysłano mozliwe ruchy ");
+                //System.out.println("Wysłano mozliwe ruchy ");
             }
             gameStep = GameSteps.RECEIVE_MOVES;
         }
@@ -229,75 +230,16 @@ public class MapAgent extends Agent {
 
 
             resetWarriorsFlag();
-            gameStep = GameSteps.RECEIVE_DEAD;
+            gameStep = GameSteps.SEND_MOVES;
 
         }
 
-        private void handleReceiveDead()
-        {
-            MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.LIVESTATE);
-            ACLMessage msg = myAgent.receive(mt);
-            if (msg != null) {
-                AID senderAID = msg.getSender();
-                String result = msg.getContent();
-
-                int index = getListIndexByAID(senderAID);
-
-                if (result == "DEAD")
-                {
-                    registeredWarriors.remove(index);
-                }
-                if (index != -1 && !registeredWarriors.get(index).isDecisionFlag()) {
-                    registeredWarriors.get(index).setDecisionFlag(true);
-                    warriorsMoved++;
-                }
-            }
-           // if (warriorsMoved == registeredWarriors.size()) {
-                if(registeredWarriors.size() == 1)
-                {
-                    gameStep = GameSteps.ONE_WARRIOR_LEFT;
-                }
-                else if(registeredWarriors.size() == 0)
-                {
-                    gameStep = GameSteps.NO_WARRIOR_LEFT;
-                }
-                else if(map.allTreasuresCollected())
-                {
-                    gameStep = GameSteps.RECEIVE_TREASURE_NO;
-                }
-                else {
-                    resetWarriorsFlag();
-                    warriorsMoved = 0;
-                    gameStep = GameSteps.SEND_MOVES;
-                }
 
 
-        }
 
-        private void handleWinner()
-        {
-            if(registeredWarriors.size() == 1) {
-                String warriorName = registeredWarriors.get(0).getAid().toString();
-                sendInformationAboutEnd(registeredWarriors.get(0));
-                showWinner(warriorName);
-            }
-            else if(registeredWarriors.size() == 0)
-                gameStep = GameSteps.NO_WARRIOR_LEFT;
-            else
-                gameStep = GameSteps.SEND_MOVES;
-        }
 
-        private void showWinner(String warriorName)
-        {
-            mapGui.drawText(WINNER_TEXT + warriorName + "!");
-            removeBehaviour(gameBehaviour);
-        }
 
-        private void handleDraw()
-        {
-            mapGui.drawText(DRAW_TEXT);
-            removeBehaviour(gameBehaviour);
-        }
+
 
         private void handleTreasureNumerRequest()
         {
@@ -309,8 +251,33 @@ public class MapAgent extends Agent {
             gameStep = GameSteps.RECEIVE_TREASURE_NO;
         }
 
-        private void handleReceiveTreasure()
-        {
+
+
+        private void resetWarriorsFlag() {
+            for (WarriorsDetails warrior : registeredWarriors)
+                warrior.setDecisionFlag(false);
+        }
+
+    }
+
+    public int getListIndexByAID(AID aid) {
+        for (int i = 0; i < getRegisteredWarriors().size(); i++) {
+            if (getRegisteredWarriors().get(i).getAid().equals(aid)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
+    private class ReceiveDead extends CyclicBehaviour{
+        public void action() {
+            if (startFlag) {
+                handleReceiveDead();
+            }
+        }
+
+        private void handleReceiveTreasure() {
             MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.TREASURE_NO_INFO);
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
@@ -321,20 +288,18 @@ public class MapAgent extends Agent {
                         int treasures = Integer.valueOf(msg.getContent());
                         registeredWarriors.get(index).setTreasureCollected(treasures);
                         registeredWarriors.get(index).setTreasureNoSentFlag(true);
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         System.out.println(e);
                     }
                 }
             }
 
-            if(registeredWarriors.size() == treasureInfoReceived())
-            {
+            if (registeredWarriors.size() == treasureInfoReceived()) {
                 String bestWarrior = getBestWarrior().getAid().toString();
                 showWinner(bestWarrior);
             }
-        }
 
+        }
         private WarriorsDetails getBestWarrior()
         {
             int maxTreasures = -1;
@@ -357,6 +322,17 @@ public class MapAgent extends Agent {
             return count;
         }
 
+        private void showWinner(String warriorName)
+        {
+            mapGui.drawText(WINNER_TEXT + warriorName + "!");
+            removeBehaviour(gameBehaviour);
+        }
+
+        private void handleDraw()
+        {
+            mapGui.drawText(DRAW_TEXT);
+            removeBehaviour(gameBehaviour);
+        }
 
         private void sendInformationAboutEnd(WarriorsDetails warrior)
         {
@@ -365,20 +341,93 @@ public class MapAgent extends Agent {
             myAgent.send(msg);
         }
 
-        private void resetWarriorsFlag() {
-            for (WarriorsDetails warrior : registeredWarriors)
-                warrior.setDecisionFlag(false);
+
+        private void handleWinner(int warriorsNumber)
+        {
+            if(warriorsNumber == 1) {
+                WarriorsDetails warrior = new WarriorsDetails();
+                for( WarriorsDetails tempwarrior: registeredWarriors) {
+                    if(!tempwarrior.isDeadFlag()) {
+                        warrior = tempwarrior;
+                        break;
+                    }
+                }
+
+
+                String warriorName = warrior.getAid().toString();
+                sendInformationAboutEnd(warrior);
+                showWinner(warriorName);
+            }
+            else if(warriorsNumber == 0)
+                handleDraw();
+
         }
 
-        public int getListIndexByAID(AID aid) {
-            for (int i = 0; i < getRegisteredWarriors().size(); i++) {
-                if (getRegisteredWarriors().get(i).getAid().equals(aid)) {
-                    return i;
+
+
+        private void handleReceiveDead()
+        {
+            MessageTemplate mt = MessageTemplate.MatchPerformative(ActionCode.LIVESTATE);
+            ACLMessage msg = myAgent.receive(mt);
+            if (msg != null) {
+                AID senderAID = msg.getSender();
+                String result = msg.getContent();
+
+                int index = getListIndexByAID(senderAID);
+
+                if (result.equals("DEAD"))
+                {
+                     registeredWarriors.get(index).setDeadFlag(true);
+                }
+                if (index != -1 && !registeredWarriors.get(index).isDecisionFlag()) {
+                    registeredWarriors.get(index).setDecisionFlag(true);
+                    warriorsMoved++;
                 }
             }
-            return -1;
+
+            int warriorsNumber = 0;
+            for(WarriorsDetails warrior: registeredWarriors) {
+                if(!warrior.isDeadFlag())
+                    warriorsNumber ++;
+            }
+
+
+
+
+
+
+
+            // if (warriorsMoved == registeredWarriors.size()) {
+            if(warriorsNumber == 1)
+            {
+                handleWinner(warriorsNumber);
+                //gameStep = GameSteps.ONE_WARRIOR_LEFT;
+            }
+            else if(warriorsNumber <= 0)
+            {
+                handleDraw();
+                //gameStep = GameSteps.NO_WARRIOR_LEFT;
+            }
+            else if(map.allTreasuresCollected())
+            {
+                handleReceiveTreasure();
+                //gameStep = GameSteps.RECEIVE_TREASURE_NO;
+            }
+            else {
+                //resetWarriorsFlag();
+               // warriorsMoved = 0;
+               // gameStep = GameSteps.SEND_MOVES;
+            }
         }
+
     }
+
+
+
+
+
+
+
 
     private class GetRegistration extends CyclicBehaviour {
 

@@ -95,10 +95,12 @@ public class WarriorAgent extends Agent {
             msg.addReceiver(myMapAgent);
             if(live > 0)
                 msg.setContent("ALIVE - LIVE: " + live  );
-            else
+            else {
                 msg.setContent("DEAD");
+System.out.println("DEAD");
+            }
             myAgent.send(msg);
-
+            myStateGui.refreshGui();
 
         }
     }
@@ -229,7 +231,7 @@ public class WarriorAgent extends Agent {
 
         MakeMoveDecision(InformationPackage nInfPack) {
             infPack = nInfPack;
-            warriorsList = List.of('1','2','3','4','5','6','7','8','9');
+            warriorsList = List.of('0','1','2','3','4','5','6','7','8','9');
 
         }
 
@@ -374,7 +376,7 @@ public class WarriorAgent extends Agent {
         public float countProfit( Vector<Character> vectorToLook) {
             float generalResult, resultPositive = 0, resultNegative = 0, temp; // positive- find a gold, negative - alien warrior
 
-            temp = findPosition('s',vectorToLook);
+            temp = findPosition('t',vectorToLook);
             if (temp != 0)
                 resultPositive =  30 - 5 * temp; //
 

@@ -14,6 +14,7 @@ public class MapField {
     private int treasuresLeft;
     private int warriorsLeft;
     private List<Position> warriorsPosition;
+    private final String FILENAME = "Resources/mapa.txt";
 
     public int getSizeX() {
         return sizex;
@@ -31,6 +32,7 @@ public class MapField {
 
     public boolean changeWariorLocation(int warrior, char direction) {
         boolean treasureCollected = false;
+        boolean wariorNext = false;
        // System.out.println("Warrior: "  + warrior);
         Position pos = warriorsPosition.get(warrior);
 
@@ -56,9 +58,14 @@ public class MapField {
             treasuresLeft--;
         }
 
+        //Jeśli obok, jest już przeciwnik to nie zmieniamy statusu
+        if(map[newPos.getX()][newPos.getY()] >= 48 && map[newPos.getX()][newPos.getY()] <= 57 )
+            wariorNext = true;
+
+        if (!wariorNext) {
         setMapField(newPos,Character.forDigit(warrior, 10));
         setMapField(pos,' ');
-        warriorsPosition.set(warrior,newPos);
+        warriorsPosition.set(warrior,newPos);}
         return treasureCollected;
     }
 
@@ -68,7 +75,7 @@ public class MapField {
 
         BufferedReader br = null;
         try {
-            br = new BufferedReader(new FileReader("Resources/mapa2.txt"));
+            br = new BufferedReader(new FileReader(FILENAME));
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
 
@@ -84,7 +91,7 @@ public class MapField {
             sizey = countLines;
             sizex = lineLength;
 
-            br = new BufferedReader(new FileReader("Resources/mapa.txt"));
+            br = new BufferedReader(new FileReader(FILENAME));
             line = br.readLine();
 
             int tempLine = 0;

@@ -24,6 +24,8 @@ public class WarriorsDetails {
         this.decisionFlag = decisionFlag;
     }
 
+
+
     public DecisionPackage getDecPack() {
         return decPack;
     }
@@ -75,7 +77,7 @@ public class WarriorsDetails {
         this.color = color;
     }
 
-
+public WarriorsDetails() {}
     public WarriorsDetails(AID nAid, Color color) {
         this.aid = nAid;
         this.color = color;
