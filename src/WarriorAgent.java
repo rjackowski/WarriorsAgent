@@ -50,8 +50,7 @@ public class WarriorAgent extends Agent {
 
 
     protected void setup() {
-      
-        System.out.println("Warrior created");
+
         treasureAmount = 0;
         myGui = new WarriorAgentGui(this);
         myStateGui = new WarriorAgentStateGui(this);
@@ -97,7 +96,6 @@ public class WarriorAgent extends Agent {
                 msg.setContent("ALIVE - LIVE: " + live  );
             else {
                 msg.setContent("DEAD");
-System.out.println("DEAD");
             }
             myAgent.send(msg);
             myStateGui.refreshGui();
@@ -260,9 +258,6 @@ System.out.println("DEAD");
                 targetWarrior =  containsWarrior(infPack.getDownVisible().firstElement());
             if (targetWarrior == 'F')
                 targetWarrior =  containsWarrior(infPack.getTopVisible().firstElement());
-
-            if(targetWarrior != 'F')
-                System.out.println(targetWarrior);
 
             //Jeśli nie ma wojownika obok, podjęcie decyzji gdzie iść
             if (targetWarrior == 'F')

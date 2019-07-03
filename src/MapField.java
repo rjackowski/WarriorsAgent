@@ -14,6 +14,7 @@ public class MapField {
     private int treasuresLeft;
     private int warriorsLeft;
     private List<Position> warriorsPosition;
+    private List<Boolean> visible;
     private final String FILENAME = "Resources/mapa.txt";
 
     public int getSizeX() {
@@ -27,6 +28,7 @@ public class MapField {
     public MapField(int warriors, int treasures) {
         warriorsLeft = warriors;
         treasuresLeft = treasures;
+        treasuresLeft = 1;
         generateMap();
     }
 
@@ -36,7 +38,6 @@ public class MapField {
        // System.out.println("Warrior: "  + warrior);
         Position pos = warriorsPosition.get(warrior);
 
-        System.out.println("X:" +pos.getX() + " Y:" + pos.getY() );
         Position newPos = new Position(0,0);
         switch (direction) {
             case 'L':
@@ -126,7 +127,7 @@ public class MapField {
         Random random = new Random();
         for (int i = 0; i < treasuresLeft; i++) {
             int index = random.nextInt(positions.size());
-            setMapField(positions.get(index), 't');
+            setMapField(positions.get(positions.size() - 2), 't');
             positions.remove(index);
         }
     }
@@ -134,10 +135,12 @@ public class MapField {
     private void generateWarriors(List<Position> positions) {
         Random random = new Random();
         warriorsPosition = new Vector<Position>();
+        visible = new Vector<Boolean>();
         for (int i = 0; i < warriorsLeft; i++) {
             int index = random.nextInt(positions.size());
             setMapField(positions.get(index), Character.forDigit(i, 10));
             warriorsPosition.add(positions.get(index));
+            visible.add(true);
             positions.remove(index);
         }
     }
@@ -186,6 +189,17 @@ public class MapField {
         return false;
     }
 
+    public void removeFromMap(int index)
+    {
+        visible.set(index, false);
+        var warrior = warriorsPosition.get(index);
+        map[warrior.getX()][warrior.getY()] = ' ';
+    }
+
+    public boolean isVisible(int index)
+    {
+        return visible.get(index);
+    }
 
     public char getFromPosition(Position p) {
         return getFromPosition(p.getX(), p.getY());

@@ -191,21 +191,23 @@ public class MapAgent extends Agent {
 
             Vector<WarriorsDetails> warriorsCollectedTreasure = new Vector<WarriorsDetails>();
             for (int i = 0; i < registeredWarriors.size(); i++) {
-                DecisionPackage decPackage = registeredWarriors.get(i).getDecPack();
-                if (decPackage.getType() == 'M') {
-                    if(map.changeWariorLocation(i, decPackage.getDirection()))
-                    warriorsCollectedTreasure.add(registeredWarriors.get(i));
-                }
-                if (decPackage.getType() == 'A') {
-                ACLMessage msgAttack = new ACLMessage(ActionCode.ATTACK);
-                msgAttack.addReceiver(registeredWarriors.get(i).getAid());
-                DecisionPackage attackPack = new DecisionPackage('A', i, decPackage.getStrength());
-                try {
-                    msgAttack.setContentObject(attackPack);
-                    myAgent.send(msgAttack);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                if(!registeredWarriors.get(i).isDeadFlag() && registeredWarriors.get(i).isDecisionFlag()) {
+                    DecisionPackage decPackage = registeredWarriors.get(i).getDecPack();
+                    if (decPackage.getType() == 'M') {
+                        if (map.changeWariorLocation(i, decPackage.getDirection()))
+                            warriorsCollectedTreasure.add(registeredWarriors.get(i));
+                    }
+                    if (decPackage.getType() == 'A') {
+                        ACLMessage msgAttack = new ACLMessage(ActionCode.ATTACK);
+                        msgAttack.addReceiver(registeredWarriors.get(decPackage.getTarget() - '0').getAid());
+                        DecisionPackage attackPack = new DecisionPackage('A', i, decPackage.getStrength());
+                        try {
+                            msgAttack.setContentObject(attackPack);
+                            myAgent.send(msgAttack);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
                 }
             }
 
@@ -225,7 +227,6 @@ public class MapAgent extends Agent {
 
                 m.setConversationId("treasure_picked");
                 myAgent.send(m);
-                System.out.println("Wyslano zebranie skarbu");
             }
 
             mapGui.updateMap();
@@ -376,13 +377,15 @@ public class MapAgent extends Agent {
 
                 int index = getListIndexByAID(senderAID);
 
-                if (result.equals("DEAD"))
-                {
-                     registeredWarriors.get(index).setDeadFlag(true);
-                }
-                if (index != -1 && !registeredWarriors.get(index).isDecisionFlag()) {
-                    registeredWarriors.get(index).setDecisionFlag(true);
-                    warriorsMoved++;
+                if(index != -1 && !registeredWarriors.get(index).isDeadFlag()) {
+                    if (result.equals("DEAD")) {
+                        registeredWarriors.get(index).setDeadFlag(true);
+                        map.removeFromMap(index);
+                    }
+     /*               if (index != -1 && !registeredWarriors.get(index).isDecisionFlag()) {
+                        registeredWarriors.get(index).setDecisionFlag(true);
+                        warriorsMoved++;
+                    }*/
                 }
             }
 

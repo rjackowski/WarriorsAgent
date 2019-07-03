@@ -34,6 +34,11 @@ public class WarriorsDetails {
         this.decPack = decPack;
     }
 
+    public void clearDecPack()
+    {
+        this.decPack = null;
+    }
+
     private boolean deadFlag;
     private boolean decisionFlag;
     private DecisionPackage decPack;
