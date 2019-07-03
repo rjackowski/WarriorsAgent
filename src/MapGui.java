@@ -81,7 +81,7 @@ class MapGui extends JFrame {
     private void paintText(Graphics g)
     {
         g.setColor(Color.BLACK);
-        g.setFont(new Font("TimesRoman", Font.BOLD, 30));
+        g.setFont(new Font("TimesRoman", Font.BOLD, 15));
         g.drawString(textToPrint, panel.getWidth() / 2 - 150, panel.getHeight() / 2 - 50);
     }
 

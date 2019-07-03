@@ -38,6 +38,7 @@ public class WarriorAgent extends Agent {
     private RegisterOnMap reg;
     private char lastDecision;
     private int treasureAmount;
+    public Random generator = new Random();
 
     public Color getColor() {
         return color;
@@ -275,22 +276,22 @@ public class WarriorAgent extends Agent {
             if  (lastDecision == 'R')
                 pointForLeft = - 10000;
             else
-                pointForLeft += countProfit(infPack.getLeftVisible());
+                pointForLeft = 1000;
 
             if(lastDecision == 'L')
                 pointForRight = - 10000;
             else
-                pointForRight += countProfit(infPack.getRightVisible());
+                pointForRight = 1000;
 
             if( lastDecision == 'T')
                 pointForDown = - 10000;
             else
-                pointForDown += countProfit(infPack.getDownVisible());
+                pointForDown = 1000;
 
             if( lastDecision == 'D')
                 pointForTop = - 10000;
             else
-                pointForTop += countProfit(infPack.getTopVisible());
+                pointForTop = 1000;
 
             if(!leftBlocked) {
                 decision = 'L';
@@ -322,7 +323,6 @@ public class WarriorAgent extends Agent {
                     decision = 'T';}
                 decisionList.add(decision);
             }
-            Random generator = new Random();
             int index = generator.nextInt(decisionList.size());
             lastDecision = decisionList.get(index);
             sendMove(decisionList.get(index));
