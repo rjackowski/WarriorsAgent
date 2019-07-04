@@ -1,0 +1,22 @@
+@startuml
+participant pc_chair as "Agent wojownik" <<(A, orange) agent>>
+participant reviewer as "Agent mapa" <<(A, orange) agent>>
+
+
+
+pc_chair -> reviewer : Zarejestruj na mapie
+
+group !Koniec gry
+
+pc_chair <- reviewer : Wyœlij widoczne pozycje
+
+alt
+pc_chair -> reviewer : Wyœlij ruch
+else
+pc_chair -> reviewer : Wyslij atak na wojownika
+end
+pc_chair <- reviewer : Przeka¿ atak
+
+end group
+pc_chair <- reviewer : Gra skoñczona
+@enduml

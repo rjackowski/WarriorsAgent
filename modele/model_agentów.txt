@@ -1,0 +1,26 @@
+@startuml
+allow_mixing
+hide empty members
+
+class pc_chair as "Agent mapa" <<(A,orange) agent>> {
+    <<achieves>> Zarz¹dzanie map¹
+    <<achieves>> Udzielanie informacji o mapie
+    <<achieves>> Wyœwietlanie mapy
+ 
+}
+
+class review_db as "Agent wojownik" <<(A,orange) agent>> {
+    <<achieves>> Eksplorowanie mapy
+    <<achieves>> Podejmowanie decyzji
+}
+
+
+
+
+actor "Uzytkownik" as a_pc_chair
+
+
+a_pc_chair -> pc_chair : Ustawienie parametrów
+
+pc_chair <-> review_db : wymiana informacji
+@enduml

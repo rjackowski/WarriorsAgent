@@ -1,0 +1,28 @@
+http://www.plantuml.com/plantuml/uml/ZP0zJiD048NxESKe5KXmWSYAae8Je3GqrcGzs1FlZpMxpc8ZojoACjmBMy894WslstrlvjERRKoagNSMoDgGIoTlucjef69arwK17Ri3QmGmbcB4pfIc8L6aYAjTpJwXeuvMM1HtkuUWv6k-HvgDpGRV0ISL1Pb6-CHn-deX7I_dQYGlF8zUpW087yj-vPDmBgl3Bq0Env2zjF-7FBMniq53NYZ3tynpfoDNzFKvmoUHIK5njH-7rFxWA2ALI-CvSdtWu-PsYZNkjJTDSC8phjO1u6eMK_9MQervS4AUKFnhK4VcAB1bN_NEVWC0
+
+
+@startuml
+hide empty members
+
+class g0 as "0. Prowadzenie gry" <<(G, green) goal>>
+
+
+class g1 as "1. Zarz¹dzanie map¹" <<(G, green) goal>>
+class g2 as "2. Eksplorowanie mapy" <<(G, green) goal>>
+
+
+class g1_1 as "1.1. Udzielanie informacji o mapie" <<(G, green) goal>>
+class g1_2 as "1.2. Wyœwietlanie mapy" <<(G, green) goal>>
+
+
+class g2_1 as "2.1 Podejmowanie decyzji o akcji" <<(G, green) goal>>
+
+g0 o-- g1
+g0 o-- g2
+
+
+g1 o-- g1_1
+g1 o-- g1_2
+
+g2 o-- g2_1
+@enduml

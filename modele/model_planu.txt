@@ -1,0 +1,14 @@
+@startuml
+state wait_1 as "Pêtla gry"
+wait_1: warriorsNr = allWariors - deadWarriors
+
+state wait_2 as "Oczekiwanie"
+wait_2: Oczekiwanie na decyzjê
+
+
+[*] -> wait_1 : Rejestracja wojowników na mapie
+wait_1 -> [*] : Koniec gry (warriorsNr == 0 || warriorsNr == 1)
+wait_1 --> wait_2 : wys³anie pozycji do wojowników
+
+wait_2 --> wait_1 : wykonanie ruchów/ataków
+@enduml
